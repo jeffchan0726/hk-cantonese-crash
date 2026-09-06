@@ -1,5 +1,5 @@
-const CACHE = "sucheng-v2";
-const ASSETS = ["./","index.html","css/app.css","js/app.js","js/data.js","manifest.json","icon.svg"];
+const CACHE = "sucheng-v3";
+const ASSETS = ["./","index.html","css/app.css","js/app.js","js/data.js","js/meta.js","js/engine.js","manifest.json","icon.svg"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
   self.skipWaiting();
@@ -11,5 +11,11 @@ self.addEventListener("activate", (e) => {
   self.clients.claim();
 });
 self.addEventListener("fetch", (e) => {
-  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
+  e.respondWith(
+    fetch(e.request).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
+      return res;
+    }).catch(() => caches.match(e.request))
+  );
 });
