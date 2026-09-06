@@ -5,5 +5,14 @@
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0e1116",
-  "theme_color": "#0e1116"
+  "theme_color": "#0e1116",
+  "description": "學香港速成輸入法：字根課、拆碼、限時、文章、錯字本。",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }
