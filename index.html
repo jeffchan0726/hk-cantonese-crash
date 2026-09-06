@@ -3,157 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0c0b10" />
-  <title>開口講 — 香港廣東話速成</title>
-  <meta name="description" content="香港廣東話速成：生存課、聲調操場、跟讀、生字卡。繁體 + 粵拼。" />
+  <meta name="theme-color" content="#0e1116" />
+  <title>速成練習 — 香港速成輸入法</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
-  <p class="desktop-hint">開口講<br>香港廣東話速成 Web App<br><span style="color:#aaa">手機比例預覽</span></p>
-  <div class="frame">
   <div class="app">
     <header class="top">
-      <div class="brand" id="brand-btn" style="cursor:pointer">
-        <div class="logo">講</div>
-        <div>
-          <h1>開口講</h1>
-          <p>香港廣東話速成</p>
-        </div>
+      <div class="brand" id="brand-btn" style="cursor:pointer;display:flex;gap:10px;align-items:center">
+        <div class="logo">速</div>
+        <div><h1>速成練習</h1><p>香港速成輸入法</p></div>
       </div>
     </header>
-
     <section id="view-home" class="view">
       <div class="hero">
-        <div class="kicker">HOI HAU CANTO</div>
-        <h2>7 日敢開口<br>先唔好背漢字。</h2>
-        <p class="tiny">香港口音 · 繁體 · 粵拼 · 茶餐廳先過考試</p>
+        <div class="k">SUCHENG / QUICK</div>
+        <h2>只打頭碼同尾碼<br>就打到繁體中文。</h2>
+        <p class="tiny">速成 = 倉頡簡化版。記住 24 個字根，再練拆頭尾。</p>
         <div class="stats">
           <div class="stat"><b id="stat-streak">0</b><span>連續日</span></div>
-          <div class="stat"><b id="stat-done">0/12</b><span>完成課</span></div>
-          <div class="stat"><b id="stat-spoken">0</b><span>開口次數</span></div>
+          <div class="stat"><b id="stat-ok">0</b><span>拆啲</span></div>
+          <div class="stat"><b id="stat-acc">0%</b><span>準確率</span></div>
         </div>
       </div>
       <div class="tasks">
-        <button class="task" id="home-continue">
-          <div class="badge">📘</div>
-          <div>
-            <h3 id="next-lesson-title">下一課</h3>
-            <p id="next-lesson-sub">生存場景</p>
-          </div>
-          <span class="go">去</span>
-        </button>
-        <button class="task" id="home-review">
-          <div class="badge">🃏</div>
-          <div>
-            <h3>今日複習</h3>
-            <p id="due-count">生字卡</p>
-          </div>
-          <span class="go">去</span>
-        </button>
-        <button class="task" id="home-tones">
-          <div class="badge">🎚️</div>
-          <div>
-            <h3>聲調操場</h3>
-            <p>6 聲 · 聽音擇調</p>
-          </div>
-          <span class="go">去</span>
-        </button>
-        <button class="task" id="home-speak">
-          <div class="badge">🎤</div>
-          <div>
-            <h3>開口挑戰</h3>
-            <p>而家課文跟讀評分</p>
-          </div>
-          <span class="go">去</span>
-        </button>
+        <button class="task" id="go-roots"><div><b>① 記字根</b><span>24 鍵：日金木水火土…</span></div><em>去</em></button>
+        <button class="task" id="go-drill"><div><b>② 拆頭尾</b><span>睇字，打兩個英文字母</span></div><em>去</em></button>
+        <button class="task" id="go-type"><div><b>③ 網頁打字</b><span>入碼擇字，練選字手勢</span></div><em>去</em></button>
+        <button class="task" id="go-hard"><div><b>難字關</b><span>長碼／難拆字</span></div><em>去</em></button>
       </div>
     </section>
-
-    <section id="view-lessons" class="view hidden">
-      <div class="section-title">12 堂生存課</div>
-      <div id="lesson-grid" class="grid"></div>
+    <section id="view-roots" class="view hidden">
+      <h3>倉頡／速成字根</h3>
+      <p class="tiny" id="root-hint"></p>
+      <div class="root-grid" id="root-grid"></div>
     </section>
-
-    <section id="view-lesson" class="view hidden">
-      <button class="back" id="lesson-back">← 返課程</button>
-      <div class="tiny" id="lesson-kicker"></div>
-      <h2 id="lesson-title" style="margin:4px 0 8px"></h2>
-      <div class="note" id="lesson-note"></div>
-      <div class="phrase">
-        <div class="han" id="phrase-han"></div>
-        <div class="jyut" id="phrase-jyut"></div>
-        <div class="en" id="phrase-en"></div>
-        <div class="row">
-          <button class="btn primary" id="btn-speak">▶ 聽原速</button>
-          <button class="btn" id="btn-slow">慢速拆音</button>
-        </div>
-        <div style="margin-top:18px">
-          <button class="mic" id="mic" aria-label="跟讀">🎤</button>
-        </div>
-        <div class="feedback" id="fb"></div>
-        <div class="row">
-          <button class="btn ghost" id="btn-prev">上一句</button>
-          <button class="btn teal" id="btn-next">下一句</button>
-        </div>
+    <section id="view-drill" class="view hidden">
+      <div class="drill-card">
+        <div class="tiny" id="drill-meta"></div>
+        <div class="big" id="drill-char">港</div>
+        <form id="drill-form">
+          <input class="box" id="drill-input" maxlength="2" autocapitalize="off" autocomplete="off" placeholder="輸入頭尾碼，例如 EU" />
+          <div class="row">
+            <button class="btn primary" type="submit">核對</button>
+            <button class="btn" type="button" id="drill-show">睇答案</button>
+            <button class="btn ghost" type="button" id="drill-next">下一字</button>
+          </div>
+        </form>
+        <div id="drill-ans" style="margin-top:12px"></div>
       </div>
+      <p class="tiny" style="margin-top:12px">規則：上→下、左→右、外→內。只取倉頡<strong>第一碼 + 最後一碼</strong>。</p>
     </section>
-
-    <section id="view-tones" class="view hidden">
-      <div class="section-title">六聲操場</div>
-      <div id="tone-list" class="tones"></div>
-      <div class="section-title">聽音擇調</div>
-      <div class="phrase">
-        <div class="han" id="quiz-word">詩</div>
-        <div class="tiny" id="quiz-meta"></div>
-        <div class="row"><button class="btn primary" id="quiz-play">▶ 再聽</button></div>
-        <div class="choices" id="quiz-choices"></div>
+    <section id="view-type" class="view hidden">
+      <div class="out" id="out"></div>
+      <div class="tiny" id="code-now" style="margin:8px 0">未入碼</div>
+      <div class="cands" id="cands"></div>
+      <div class="kb" id="kb"></div>
+      <div class="row">
+        <button class="btn" id="type-bs">刪</button>
+        <button class="btn" id="type-space">翻頁／清碼</button>
+        <button class="btn" id="copy-out">複製</button>
+        <button class="btn ghost" id="type-clear">清空</button>
       </div>
-      <div class="section-title">常用助詞</div>
-      <div id="particle-box"></div>
+      <p class="tiny">電腦鍵盤都可以打。數字鍵 1–9 擇候選字。</p>
     </section>
-
-    <section id="view-cards" class="view hidden">
-      <div class="section-title">生字卡</div>
-      <p class="tiny" id="card-meta"></p>
-      <div class="flip" id="flip-card"></div>
-      <div class="srs-btns" id="srs-actions">
-        <button class="srs-again" id="srs-again">未識</button>
-        <button class="srs-ok" id="srs-ok">記得</button>
-        <button class="srs-easy" id="srs-easy">太易</button>
-      </div>
+    <section id="view-lookup" class="view hidden">
+      <input class="search" id="q" placeholder="查漢字或速成碼，例如 香 或 HA" />
+      <div id="look-res"></div>
     </section>
-
-    <section id="view-dict" class="view hidden">
-      <input class="search" id="dict-q" placeholder="搜漢字／粵拼／意思" />
-      <div id="dict-list"></div>
-    </section>
-
     <section id="view-me" class="view hidden">
-      <div class="section-title">我的進度</div>
+      <h3>進度</h3>
       <div class="stats">
         <div class="stat"><b id="me-streak">0</b><span>連續</span></div>
-        <div class="stat"><b id="me-spoken">0</b><span>開口</span></div>
-        <div class="stat"><b>本機</b><span>進度</span></div>
+        <div class="stat"><b id="me-ok">0</b><span>拆啲</span></div>
+        <div class="stat"><b id="me-acc">0%</b><span>準確率</span></div>
       </div>
-      <div class="settings">
-        <label>隱藏漢字（淨睇粵拼）<input type="checkbox" class="switch" id="hide-han" /></label>
-        <label>預設慢速朗讀<input type="checkbox" class="switch" id="slow-mode" /></label>
-      </div>
-      <p class="tiny" style="margin-top:16px">朗讀會優先用系統嘅「香港粵語／國語」聲線。語音辨識喺 Chrome／Edge 最穩，要係麥克風權限。</p>
-      <button class="btn ghost" id="reset-data" style="margin-top:16px">清除本機進度</button>
+      <p class="tiny" style="margin-top:12px">已用網頁打字：<span id="me-type">0</span> 字</p>
+      <p class="tiny">碼表以倉頡五代（香港用字優先）轉速成頭尾碼。個別系統三代／五代可能有差異。</p>
+      <button class="btn ghost" id="reset" style="margin-top:12px">清除進度</button>
     </section>
-
     <nav class="tabbar">
       <button class="tab on" data-view="home"><b>🏠</b>今日</button>
-      <button class="tab" data-view="lessons"><b>📚</b>課程</button>
-      <button class="tab" data-view="tones"><b>🎚️</b>聲調</button>
-      <button class="tab" data-view="cards"><b>🃏</b>複習</button>
-      <button class="tab" data-view="dict"><b>🔎</b>字典</button>
+      <button class="tab" data-view="roots"><b>🔠</b>字根</button>
+      <button class="tab" data-view="drill"><b>🧩</b>拆碼</button>
+      <button class="tab" data-view="type"><b>⌨️</b>打字</button>
+      <button class="tab" data-view="lookup"><b>🔎</b>查碼</button>
     </nav>
-  </div>
   </div>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
