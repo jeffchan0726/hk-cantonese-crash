@@ -48,7 +48,7 @@ function addToday(n) {
 }
 function $(id) { return document.getElementById(id); }
 function go(v) {
-  stopTimer();
+  if (typeof stopTimer === "function") stopTimer();
   state.view = v;
   render();
 }
@@ -57,17 +57,16 @@ function acc(p) {
   return t ? Math.round((p.correct / t) * 100) : 0;
 }
 function idx() {
-  if (!SUCHENG._idx) {
-    const byHan = {}, bySc = {};
-    SUCHENG.chars.forEach((row) => {
-      const [han, cj, sc] = row;
-      if (!han || han.length !== 1) return;
-      if (!byHan[han]) byHan[han] = { han, cj, sc };
-      if (!bySc[sc]) bySc[sc] = [];
-      if (!bySc[sc].includes(han) && bySc[sc].length < 48) bySc[sc].push(han);
-    });
-    SUCHENG._idx = { byHan, bySc };
-  }
+  SUCHENG._idx = null;
+  const byHan = {}, bySc = {};
+  SUCHENG.chars.forEach((row) => {
+    const [han, cj, sc] = row;
+    if (!han || han.length !== 1) return;
+    if (!byHan[han]) byHan[han] = { han, cj, sc };
+    if (!bySc[sc]) bySc[sc] = [];
+    if (!bySc[sc].includes(han) && bySc[sc].length < 48) bySc[sc].push(han);
+  });
+  SUCHENG._idx = { byHan, bySc };
   return SUCHENG._idx;
 }
 function labelCode(code) {
@@ -76,8 +75,8 @@ function labelCode(code) {
 function poolOf(name) {
   if (name === "hard") return SUCHENG.hard.filter((h) => idx().byHan[h]);
   if (name === "all") return unique(SUCHENG.chars.map((x) => x[0]).filter((h) => h && h.length === 1 && idx().byHan[h]));
-  if (name === "singles") return SUCHENG.singles.filter((h) => idx().byHan[h]);
-  if (name === "cantonese") return SUCHENG.cantonese.filter((h) => idx().byHan[h]);
+  if (name === "singles") return (SUCHENG.singles || []).filter((h) => idx().byHan[h]);
+  if (name === "cantonese") return (SUCHENG.cantonese || []).filter((h) => idx().byHan[h]);
   if (name === "wrong") return Object.keys(load().wrongBook || {}).filter((h) => idx().byHan[h]);
   if (name === "mark") return Object.keys(load().bookmarks || {}).filter((h) => idx().byHan[h]);
   return SUCHENG.starter.filter((h) => idx().byHan[h]);
