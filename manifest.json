@@ -1,0 +1,10 @@
+{
+  "name": "開口講 — 香港廣東話速成",
+  "short_name": "開口講",
+  "lang": "zh-HK",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c0b10",
+  "theme_color": "#0c0b10",
+  "description": "香港廣東話速成：生存課、聲調、跟讀、生字卡"
+}
