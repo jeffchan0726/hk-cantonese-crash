@@ -1,10 +1,9 @@
 {
-  "name": "開口講 — 香港廣東話速成",
-  "short_name": "開口講",
+  "name": "速成練習 — 香港速成輸入法",
+  "short_name": "速成練習",
   "lang": "zh-HK",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0c0b10",
-  "theme_color": "#0c0b10",
-  "description": "香港廣東話速成：生存課、聲調、跟讀、生字卡"
+  "background_color": "#0e1116",
+  "theme_color": "#0e1116"
 }
