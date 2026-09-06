@@ -5,12 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0e1116" />
   <title>速成練習 — 香港速成輸入法</title>
-  <meta name="description" content="學香港速成輸入法：字根課、拆碼提示、限時挑戰、文章練習、錯字本。" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/app.css" />
+  <script>
+    window.__errs = [];
+    window.onerror = function (m, s, l) {
+      window.__errs.push(m + " @ " + s + ":" + l);
+      var el = document.getElementById("view-home");
+      if (el) el.innerHTML = "<p class='tiny'>" + window.__errs.join("<br>") + "</p>";
+    };
+  </script>
 </head>
 <body>
   <div class="app">
@@ -24,7 +29,7 @@
       </div>
       <button class="pill" id="goal-pill" type="button">今日 0/20</button>
     </header>
-    <section id="view-home" class="view"></section>
+    <section id="view-home" class="view"><p class="tiny">載入中…</p></section>
     <section id="view-learn" class="view hidden"></section>
     <section id="view-drill" class="view hidden"></section>
     <section id="view-type" class="view hidden"></section>
