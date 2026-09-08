@@ -1,85 +1,55 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-  <meta name="theme-color" content="#0e1116" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>速成練習 — 香港速成輸入法</title>
-  <meta name="description" content="學香港速成輸入法：字根課、拆碼提示、限時挑戰、文章練習、錯字本。倉頡頭碼+尾碼。" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/app.css" />
-  <script>
-    window.__errs = [];
-    window.onerror = function (m, s, l) {
-      window.__errs.push(m + " @ " + s + ":" + l);
-      var el = document.getElementById("view-home");
-      if (el) el.innerHTML = "<p class='tiny'>" + window.__errs.join("<br>") + "</p>";
-    };
-  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e1116">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="速成練習">
+  <title>速成練習 · 香港速成輸入法</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg">
+  <link rel="stylesheet" href="css/app.css?v=7">
 </head>
 <body>
-  <div class="app">
-    <aside class="sidenav" id="sidenav">
-      <div class="brand" id="side-brand">
-        <div class="logo">速</div>
-        <div>
-          <h1>速成練習</h1>
-          <p>香港速成輸入法</p>
-        </div>
+  <aside class="sidenav" id="sidenav">
+    <div class="brand">
+      <div class="logo">速</div>
+      <div>
+        <div class="brand-title">速成練習</div>
+        <div class="brand-sub">香港速成輸入法</div>
       </div>
-      <nav class="side-tabs">
-        <button class="tab on" data-view="home"><b>🏠</b>今日</button>
-        <button class="tab" data-view="learn"><b>📘</b>課程</button>
-        <button class="tab" data-view="drill"><b>🧩</b>拆碼</button>
-        <button class="tab" data-view="type"><b>⌨️</b>打字</button>
-        <button class="tab" data-view="article"><b>📝</b>文章</button>
-        <button class="tab" data-view="me"><b>👤</b>我</button>
-      </nav>
-      <p class="tiny side-hint">電腦版用實體鍵盤打頭尾碼，Enter 核對，Esc 睇答案。</p>
-    </aside>
-
-    <div class="stage">
-      <header class="top">
-        <div class="brand" id="brand-btn">
-          <div class="logo">速</div>
-          <div>
-            <h1>速成練習</h1>
-            <p>香港速成輸入法</p>
-          </div>
-        </div>
-        <div class="top-right">
-          <span class="device-pill" id="device-pill">手機版</span>
-          <button class="pill" id="goal-pill" type="button">今日 0/20</button>
-        </div>
-      </header>
-
-      <section id="view-home" class="view"><p class="tiny">載入中…</p></section>
-      <section id="view-learn" class="view hidden"></section>
-      <section id="view-drill" class="view hidden"></section>
-      <section id="view-type" class="view hidden"></section>
-      <section id="view-article" class="view hidden"></section>
-      <section id="view-review" class="view hidden"></section>
-      <section id="view-lookup" class="view hidden"></section>
-      <section id="view-me" class="view hidden"></section>
     </div>
+    <nav class="side-tabs" id="side-tabs"></nav>
+    <p class="side-hint">電腦版用實體鍵盤打頭尾碼，Enter 核對，Esc 睇答案。</p>
+  </aside>
 
-    <nav class="tabbar">
-      <button class="tab on" data-view="home"><b>🏠</b>今日</button>
-      <button class="tab" data-view="learn"><b>📘</b>課程</button>
-      <button class="tab" data-view="drill"><b>🧩</b>拆碼</button>
-      <button class="tab" data-view="type"><b>⌨️</b>打字</button>
-      <button class="tab" data-view="me"><b>👤</b>我</button>
-    </nav>
+  <div class="stage">
+    <header class="topbar">
+      <div class="top-left">
+        <span class="device-pill" id="device-pill">—</span>
+        <span class="goal-pill" id="goal-pill">今日 0/20</span>
+      </div>
+      <button class="ghost" id="btn-hint-global" type="button" hidden>提示</button>
+    </header>
+    <main id="main" class="main">載入中…</main>
   </div>
-  <script src="js/data.js"></script>
-  <script src="js/meta.js"></script>
-  <script src="js/engine.js"></script>
-  <script src="js/app.js"></script>
+
+  <nav class="tabbar" id="tabbar"></nav>
+  <div id="toast" class="toast" hidden></div>
+
+  <script>
+    window.onerror = function (m) {
+      var el = document.getElementById("main");
+      if (el) el.innerHTML = "<pre class='boot-err'>" + String(m) + "</pre>";
+    };
+  </script>
+  <script src="js/data.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js?v=7").catch(function () {});
+    }
+  </script>
 </body>
 </html>

@@ -1,18 +1,10 @@
 {
-  "name": "速成練習 — 香港速成輸入法",
-  "short_name": "速成練習",
-  "lang": "zh-HK",
-  "start_url": "./",
+  "name": "速成練習",
+  "short_name": "速成",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0e1116",
   "theme_color": "#0e1116",
-  "description": "學香港速成輸入法：字根課、拆碼、限時、文章、錯字本。",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
-  ]
+  "lang": "zh-HK",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }
