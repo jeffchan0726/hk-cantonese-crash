@@ -35,7 +35,7 @@
   function isPc() { return window.matchMedia("(min-width: 860px)").matches; }
   function today() { return new Date().toISOString().slice(0, 10); }
   function toast(msg) { const el = $("toast"); el.hidden = false; el.textContent = msg; clearTimeout(toast._t); toast._t = setTimeout(() => { el.hidden = true; }, 1600); }
-  function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&", "<":"<", ">":">", '"':""", "'":"&#39;" }[c])); }
+  function esc(s) { return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">"); }
   function idx() {
     const byHan = new Map(), bySc = new Map();
     (SUCHENG.chars || []).forEach((row) => {
@@ -76,7 +76,7 @@
     bumpDay();
     $("device-pill").textContent = isPc() ? "\u96fb\u8166\u7248" : "\u624b\u6a5f\u7248";
     $("goal-pill").textContent = "\u4eca\u65e5 " + state.todayCount + "/20";
-    const html = TABS.map((t) => `<button type="button" data-view="${t.id}" class="${state.view === t.id || (t.id === "learn" && ["roots","rootquiz"].includes(state.view)) ? "on" : ""}">${t.icon} ${t.label}</button>`).join("");
+    const html = TABS.map((t) => "<button type=\"button\" data-view=\"" + t.id + "\" class=\"" + (state.view === t.id || (t.id === "learn" && ["roots","rootquiz"].includes(state.view)) ? "on" : "") + "\">" + t.icon + " " + t.label + "</button>").join("");
     $("side-tabs").innerHTML = html;
     $("tabbar").innerHTML = html;
   }
@@ -89,24 +89,24 @@
       remain = 60;
       timer = setInterval(() => {
         remain -= 1;
-        if (remain <= 0) { clearInterval(timer); timer = null; toast("\u6642\u9593\u5230\uff1a\u62c6\u5572 " + (drill ? drill.got : 0) + " \u96bb"); go("home"); }
+        if (remain <= 0) { clearInterval(timer); timer = null; toast("\u6642\u9593\u5230"); go("home"); }
         else if (state.view === "drill") render();
       }, 1000);
     }
   }
   function kbHtml(hintKeys) {
     const set = new Set((hintKeys || "").toUpperCase().split(""));
-    return `<div class="kb">${KEYS.map((row) => `<div class="kb-row">${row.split("").map((k) => `<button type="button" class="k${set.has(k) ? " hint" : ""}" data-k="${k.toLowerCase()}"><b>${k}</b><small>${SUCHENG.map[k] || ""}</small></button>`).join("")}</div>`).join("")}</div>`;
+    return "<div class=\"kb\">" + KEYS.map((row) => "<div class=\"kb-row\">" + row.split("").map((k) => "<button type=\"button\" class=\"k" + (set.has(k) ? " hint" : "") + "\" data-k=\"" + k.toLowerCase() + "\"><b>" + k + "</b><small>" + (SUCHENG.map[k] || "") + "</small></button>").join("") + "</div>").join("") + "</div>";
   }
   function htmlHome() {
     const next = LESSONS.find((l) => !state.lessonsDone[l.id]) || LESSONS[0];
-    return `<div class="home-grid"><section class="hero"><div class="kicker">SUCHENG / QUICK</div><h1>\u53ea\u6253\u982d\u78bc\u540c\u5c3e\u78bc<br>\u5c31\u6253\u5230\u7e41\u9ad4\u4e2d\u6587\u3002</h1><p class="lede">\u901f\u6210 = \u5009\u9821\u7c21\u5316\u7248\u3002\u300c\u6e2f\u300d\u901f\u6210 <b>\u6c34\u5c71 EU</b>\u3002\u300c\u8aaa\u300d\u901f\u6210 <b>\u535c\u5c71 YU</b>\u3002</p><div class="stats"><div class="stat"><b>${state.streak || 0}</b><span>\u9023\u7e8c\u65e5</span></div><div class="stat"><b>${state.correct || 0}</b><span>\u62c6\u5572</span></div><div class="stat"><b>${acc()}%</b><span>\u6e96\u78ba\u7387</span></div></div><p class="lede" style="margin:14px 0 0">\u4eca\u65e5\u76ee\u6a19 ${state.todayCount || 0} / 20</p></section><section class="path"><article class="path-card"><div><h3>\u7e7c\u7e8c\uff1a${esc(next.title)}</h3><p>${esc(next.blurb)}</p></div><button class="go" data-go="${next.id}">\u53bb</button></article><article class="path-card"><div><h3>\u8ab2\u7a0b\u8def\u5f91</h3><p>\u5b57\u6839 \u2192 \u55ae\u78bc \u2192 \u5e38\u7528 \u2192 \u7cb5\u8a9e \u2192 \u9650\u6642 \u2192 \u6587\u7ae0</p></div><button class="go" data-view="learn">\u53bb</button></article><article class="path-card"><div><h3>\u81ea\u7531\u62c6\u78bc</h3><p>\u5e38\u7528 / \u5168\u90e8 / \u96e3\u5b57 / \u932f\u5b57\u672c</p></div><button class="go" data-view="drill">\u53bb</button></article><article class="path-card"><div><h3>\u6587\u7ae0\u7df4\u7fd2</h3><p>\u5167\u5efa\u9999\u6e2f\u60c5\u666f</p></div><button class="go" data-view="article">\u53bb</button></article><article class="path-card"><div><h3>\u932f\u5b57\u672c ${state.wrongBook.length}</h3><p>\u6253\u932f\u81ea\u52d5\u6536</p></div><button class="go" data-view="review">\u53bb</button></article><article class="path-card"><div><h3>\u67e5\u78bc</h3><p>\u6f22\u5b57 \u2194 \u901f\u6210\uff0f\u5009\u9821</p></div><button class="go" data-view="lookup">\u53bb</button></article></section></div>`;
+    return "<div class=\"home-grid\"><section class=\"hero\"><div class=\"kicker\">SUCHENG / QUICK</div><h1>\u53ea\u6253\u982d\u78bc\u540c\u5c3e\u78bc<br>\u5c31\u6253\u5230\u7e41\u9ad4\u4e2d\u6587\u3002</h1><p class=\"lede\">\u300c\u6e2f\u300d EU \u6c34\u5c71\u3002\u300c\u8aaa\u300d YU \u535c\u5c71\u3002</p><div class=\"stats\"><div class=\"stat\"><b>" + (state.streak || 0) + "</b><span>\u9023\u7e8c\u65e5</span></div><div class=\"stat\"><b>" + (state.correct || 0) + "</b><span>\u62c6\u5572</span></div><div class=\"stat\"><b>" + acc() + "%</b><span>\u6e96\u78ba\u7387</span></div></div><p class=\"lede\">\u4eca\u65e5 " + (state.todayCount || 0) + " / 20</p></section><section class=\"path\"><article class=\"path-card\"><div><h3>\u7e7c\u7e8c\uff1a" + esc(next.title) + "</h3><p>" + esc(next.blurb) + "</p></div><button class=\"go\" data-go=\"" + next.id + "\">\u53bb</button></article><article class=\"path-card\"><div><h3>\u8ab2\u7a0b</h3><p>\u5b57\u6839 \u2192 \u55ae\u78bc \u2192 \u7cb5\u8a9e \u2192 \u6587\u7ae0</p></div><button class=\"go\" data-view=\"learn\">\u53bb</button></article><article class=\"path-card\"><div><h3>\u62c6\u78bc</h3><p>\u5e38\u7528 / \u96e3\u5b57 / \u932f\u5b57\u672c</p></div><button class=\"go\" data-view=\"drill\">\u53bb</button></article><article class=\"path-card\"><div><h3>\u6587\u7ae0</h3><p>\u9999\u6e2f\u60c5\u666f</p></div><button class=\"go\" data-view=\"article\">\u53bb</button></article><article class=\"path-card\"><div><h3>\u932f\u5b57\u672c " + state.wrongBook.length + "</h3><p>\u6253\u932f\u81ea\u52d5\u6536</p></div><button class=\"go\" data-view=\"review\">\u53bb</button></article><article class=\"path-card\"><div><h3>\u67e5\u78bc</h3><p>\u6f22\u5b57 \u2194 \u901f\u6210</p></div><button class=\"go\" data-view=\"lookup\">\u53bb</button></article></section></div>";
   }
   function htmlLearn() {
-    return `<section class="panel"><div class="kicker">\u8ab2\u7a0b</div><h1>\u4e5d\u8ab2\u7531\u6dfa\u5165\u6df1</h1><div class="path">${LESSONS.map((l) => `<article class="path-card"><div><h3>${esc(l.title)} ${state.lessonsDone[l.id] ? "\u2713" : ""}</h3><p>${esc(l.blurb)}</p></div><button class="go" data-go="${l.id}">\u53bb</button></article>`).join("")}</div></section>`;
+    return "<section class=\"panel\"><div class=\"kicker\">\u8ab2\u7a0b</div><h1>\u4e5d\u8ab2</h1><div class=\"path\">" + LESSONS.map((l) => "<article class=\"path-card\"><div><h3>" + esc(l.title) + (state.lessonsDone[l.id] ? " \u2713" : "") + "</h3><p>" + esc(l.blurb) + "</p></div><button class=\"go\" data-go=\"" + l.id + "\">\u53bb</button></article>").join("") + "</div></section>";
   }
   function htmlRoots() {
-    return `<section class="panel"><div class="kicker">\u5b57\u6839</div><h1>\u5eff\u56db\u5b57\u6839</h1><p class="lede">X \u4fc2\u96e3\u5b57\u9375\uff0c\u6b63\u5e38\u5514\u4f7f\u6253\u982d\u5c3e\u3002</p><div class="root-grid">${"ABCDEFGHIJKLMNOPQRSTUVWY".split("").map((k) => `<div class="root"><b>${SUCHENG.map[k]}</b><span>${k} \u00b7 ${esc(SUCHENG.mnemonics[k] || "")}</span></div>`).join("")}</div><div class="row" style="margin-top:16px"><button class="btn" data-go="rootquiz">\u53bb\u6e2c\u9a57</button><button class="ghost" data-view="learn">\u8fd4\u8ab2\u7a0b</button></div></section>`;
+    return "<section class=\"panel\"><div class=\"kicker\">\u5b57\u6839</div><h1>\u5eff\u56db\u5b57\u6839</h1><div class=\"root-grid\">" + "ABCDEFGHIJKLMNOPQRSTUVWY".split("").map((k) => "<div class=\"root\"><b>" + SUCHENG.map[k] + "</b><span>" + k + "</span></div>").join("") + "</div><div class=\"row\" style=\"margin-top:16px\"><button class=\"btn\" data-go=\"rootquiz\">\u53bb\u6e2c\u9a57</button></div></section>";
   }
   function startQuiz() {
     const keys = "ABCDEFGHIJKLMNOPQRSTUVWY".split("");
@@ -117,51 +117,46 @@
   }
   function htmlQuiz() {
     if (!quiz) startQuiz();
-    return `<section class="panel"><div class="kicker">\u5b57\u6839\u6e2c\u9a57</div><h1>\u300c${SUCHENG.map[quiz.ans]}\u300d\u4fc2\u908a\u7c92\u9375\uff1f</h1><p class="lede">${esc(SUCHENG.mnemonics[quiz.ans] || "")} \u00b7 \u9023\u4e2d ${quiz.streak} \u6b21</p><div class="quiz-opts">${quiz.opts.map((k) => `<button type="button" data-quiz="${k}">${k}<br><small>${SUCHENG.map[k]}</small></button>`).join("")}</div></section>`;
+    return "<section class=\"panel\"><h1>\u300c" + SUCHENG.map[quiz.ans] + "\u300d\u4fc2\u908a\u7c92\u9375\uff1f</h1><p class=\"lede\">\u9023\u4e2d " + quiz.streak + " \u6b21</p><div class=\"quiz-opts\">" + quiz.opts.map((k) => "<button type=\"button\" data-quiz=\"" + k + "\">" + k + "<br><small>" + SUCHENG.map[k] + "</small></button>").join("") + "</div></section>";
   }
   function htmlDrill() {
     if (!drill || !info(drill.han)) startDrill(state.pool || "starter", !!(drill && drill.timed));
-    if (!drill) return `<section class="panel"><p>\u5462\u500b\u5b57\u5eab\u66ab\u6642\u5187\u5b57\u3002</p></section>`;
+    if (!drill) return "<section class=\"panel\"><p>\u5187\u5b57</p></section>";
     const row = info(drill.han);
     const hintKeys = drill.hint === 1 ? row.sc[0] : drill.hint >= 2 ? row.sc : "";
-    const showAns = drill.hint >= 2 ? row.sc.toUpperCase() + " \u00b7 " + labelCode(row.sc) : drill.hint === 1 ? row.sc[0].toUpperCase() + "\u2026" : "";
-    return `<div class="split"><section class="drill-card"><div class="chips">${[["starter","\u5e38\u7528"],["cantonese","\u7cb5\u8a9e"],["hard","\u96e3\u5b57"],["singles","\u55ae\u78bc"],["wrong","\u932f\u5b57\u672c"],["all","\u5168\u90e8"]].map(([id, lab]) => `<button class="chip${(state.pool||"starter")===id?" on":""}" data-pool="${id}">${lab}</button>`).join("")}</div>${drill.timed ? `<p class="lede">\u5269 ${remain}s \u00b7 \u5df2\u62c6\u5572 ${drill.got}</p>` : ""}<div class="char">${drill.han}</div><div class="meta">${drill.hint >= 2 ? "\u5009\u9821 " + row.cj.toUpperCase() : "\u932f\u4e00\u6b21\u4eae\u982d\u78bc\uff0c\u932f\u5169\u6b21\u51fa\u7b54\u6848"}</div><div class="answer">${esc(showAns)}</div><form id="drill-form"><input id="drill-in" type="text" maxlength="4" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="\u6253\u982d\u5c3e\u78bc\uff0c\u4f8b\u5982 yu" value="${esc(typed)}"></form><p class="feedback" id="drill-fb"></p><div class="row"><button class="btn" id="btn-check" type="button">\u6838\u5c0d</button><button class="ghost" id="btn-hint" type="button">\u63d0\u793a</button><button class="ghost" id="btn-skip" type="button">\u8df3\u904e</button><button class="ghost" id="btn-mark" type="button">${state.bookmarks.includes(drill.han) ? "\u5df2\u6536\u85cf" : "\u6536\u85cf"}</button></div></section><section class="panel"><p class="lede">\u96fb\u8166\u7248\u53ef\u76f4\u63a5\u7528\u9375\u76e4\u3002Esc \u7747\u7b54\u6848\u3002</p>${kbHtml(hintKeys)}</section></div>`;
+    const showAns = drill.hint >= 2 ? row.sc.toUpperCase() + " " + labelCode(row.sc) : drill.hint === 1 ? row.sc[0].toUpperCase() + "..." : "";
+    const chips = [["starter","\u5e38\u7528"],["cantonese","\u7cb5\u8a9e"],["hard","\u96e3\u5b57"],["singles","\u55ae\u78bc"],["wrong","\u932f\u5b57\u672c"],["all","\u5168\u90e8"]].map((x) => "<button class=\"chip" + ((state.pool||"starter")===x[0]?" on":"") + "\" data-pool=\"" + x[0] + "\">" + x[1] + "</button>").join("");
+    return "<div class=\"split\"><section class=\"drill-card\"><div class=\"chips\">" + chips + "</div><div class=\"char\">" + drill.han + "</div><div class=\"meta\">" + (drill.hint>=2 ? "\u5009\u9821 " + row.cj.toUpperCase() : "\u932f\u4e00\u6b21\u4eae\u982d\u78bc") + "</div><div class=\"answer\">" + showAns + "</div><form id=\"drill-form\"><input id=\"drill-in\" type=\"text\" maxlength=\"4\" autocomplete=\"off\" value=\"" + typed + "\"></form><div class=\"row\"><button class=\"btn\" id=\"btn-check\" type=\"button\">\u6838\u5c0d</button><button class=\"ghost\" id=\"btn-hint\" type=\"button\">\u63d0\u793a</button><button class=\"ghost\" id=\"btn-skip\" type=\"button\">\u8df3\u904e</button></div></section><section class=\"panel\">" + kbHtml(hintKeys) + "</section></div>";
   }
   function htmlType() {
     const hits = I.bySc.get(typed.toLowerCase()) || [];
-    return `<div class="split"><section class="panel"><div class="kicker">\u6253\u5b57</div><h1>\u8f38\u5165\u901f\u6210\u78bc</h1><input id="type-in" type="text" maxlength="4" autocomplete="off" placeholder="\u4f8b\u5982 eu = \u6e2f" value="${esc(typed)}"><div class="cands">${hits.slice(0, 12).map((h) => `<span class="cand">${h}</span>`).join("") || "<span class='lede'>\u672a\u6709\u5c0d\u61c9\u5b57</span>"}</div></section><section class="panel">${kbHtml(typed)}</section></div>`;
+    return "<div class=\"split\"><section class=\"panel\"><h1>\u8f38\u5165\u901f\u6210\u78bc</h1><input id=\"type-in\" type=\"text\" maxlength=\"4\" value=\"" + typed + "\"><div class=\"cands\">" + (hits.slice(0,12).map((h) => "<span class=\"cand\">" + h + "</span>").join("") || "") + "</div></section><section class=\"panel\">" + kbHtml(typed) + "</section></div>";
   }
   function htmlArticle() {
     const art = ARTICLES[state.articleId] || ARTICLES.hi;
-    if (state._ai == null) {
-      const i = [...art.text].findIndex((c) => I.byHan.has(c));
-      state._ai = i < 0 ? 0 : i; state._amiss = 0;
-    }
-    const cur = art.text[state._ai] || "";
-    const row = info(cur);
-    const html = [...art.text].map((ch, i) => `<span class="${i < state._ai ? "done" : i === state._ai ? "cur" : "todo"}">${esc(ch)}</span>`).join("");
-    return `<div class="split"><section class="panel"><div class="chips">${Object.keys(ARTICLES).map((id) => `<button class="chip${state.articleId===id?" on":""}" data-art="${id}">${esc(ARTICLES[id].title)}</button>`).join("")}</div><div class="passage">${html}</div><form id="art-form"><input id="art-in" type="text" maxlength="4" autocomplete="off" placeholder="${row ? "\u6253 " + cur + " \u5605\u901f\u6210\u78bc" : "\u6a19\u9ede\u53ef\u8df3\u904e"}"></form></section><section class="panel"><p class="lede">${row ? cur + " \u2192 " + (state._amiss >= 2 ? row.sc.toUpperCase() + " " + labelCode(row.sc) : "\u932f\u5169\u6b21\u5148\u51fa\u63d0\u793a") : "\u6a19\u9ede\uff0f\u672a\u6536\u9304\u5b57\u53ef\u8df3\u904e"}</p>${kbHtml(state._amiss >= 1 && row ? (state._amiss >= 2 ? row.sc : row.sc[0]) : "")}<div class="row" style="margin-top:12px"><button class="ghost" id="btn-skip-art" type="button">\u8df3\u904e\u5462\u96bb</button></div></section></div>`;
+    if (state._ai == null) { const i = [...art.text].findIndex((c) => I.byHan.has(c)); state._ai = i < 0 ? 0 : i; state._amiss = 0; }
+    const cur = art.text[state._ai] || ""; const row = info(cur);
+    const html = [...art.text].map((ch, i) => "<span class=\"" + (i < state._ai ? "done" : i === state._ai ? "cur" : "todo") + "\">" + ch + "</span>").join("");
+    const chips = Object.keys(ARTICLES).map((id) => "<button class=\"chip" + (state.articleId===id?" on":"") + "\" data-art=\"" + id + "\">" + ARTICLES[id].title + "</button>").join("");
+    return "<div class=\"split\"><section class=\"panel\"><div class=\"chips\">" + chips + "</div><div class=\"passage\">" + html + "</div><form id=\"art-form\"><input id=\"art-in\" type=\"text\" maxlength=\"4\"></form></section><section class=\"panel\"><p class=\"lede\">" + (row ? (state._amiss>=2 ? row.sc.toUpperCase() : "\u932f\u5169\u6b21\u51fa\u63d0\u793a") : "") + "</p>" + kbHtml(state._amiss>=1 && row ? (state._amiss>=2?row.sc:row.sc[0]) : "") + "<div class=\"row\" style=\"margin-top:12px\"><button class=\"ghost\" id=\"btn-skip-art\" type=\"button\">\u8df3\u904e</button></div></section></div>";
   }
   function htmlReview() {
-    const rowOf = (h) => { const r = info(h); return `<div class="item"><b>${h}</b><span>${r ? r.sc.toUpperCase() + " \u00b7 " + labelCode(r.sc) : ""}</span></div>`; };
-    return `<section class="panel"><div class="kicker">\u8907\u7fd2</div><h1>\u932f\u5b57\u672c</h1>${state.wrongBook.length ? `<div class="list">${state.wrongBook.map(rowOf).join("")}</div><div class="row" style="margin-top:14px"><button class="btn" data-pool="wrong" data-view="drill">\u958b\u59cb\u8907\u7fd2</button></div>` : "<p class='lede'>\u672a\u6709\u932f\u5b57\u3002</p>"}<h1 style="margin-top:24px">\u6536\u85cf</h1>${state.bookmarks.length ? `<div class="list">${state.bookmarks.map(rowOf).join("")}</div>` : "<p class='lede'>\u672a\u6709\u6536\u85cf\u3002</p>"}</section>`;
+    const rowOf = (h) => { const r = info(h); return "<div class=\"item\"><b>" + h + "</b><span>" + (r ? r.sc.toUpperCase() : "") + "</span></div>"; };
+    return "<section class=\"panel\"><h1>\u932f\u5b57\u672c</h1>" + (state.wrongBook.length ? "<div class=\"list\">" + state.wrongBook.map(rowOf).join("") + "</div><button class=\"btn\" data-pool=\"wrong\" data-view=\"drill\">\u8907\u7fd2</button>" : "<p class=\"lede\">\u672a\u6709\u932f\u5b57</p>") + "<h1>\u6536\u85cf</h1>" + (state.bookmarks.length ? "<div class=\"list\">" + state.bookmarks.map(rowOf).join("") + "</div>" : "<p class=\"lede\">\u672a\u6709\u6536\u85cf</p>") + "</section>";
   }
   function htmlLookup() {
-    const q = (state._q || "").trim();
-    let body = "";
-    if (q) {
-      if (I.byHan.has(q[0])) { const r = info(q[0]); body = `<div class="char">${q[0]}</div><p class="answer">${r.sc.toUpperCase()}</p><p class="lede">\u901f\u6210 ${labelCode(r.sc)}<br>\u5009\u9821 ${r.cj.toUpperCase()}</p>`; }
-      else { const hits = I.bySc.get(q.toLowerCase()) || []; body = hits.length ? `<div class="cands">${hits.map((h) => `<span class="cand">${h}</span>`).join("")}</div>` : "<p class='lede'>\u641e\u5514\u5230\u3002</p>"; }
-    }
-    return `<section class="panel"><div class="kicker">\u67e5\u78bc</div><h1>\u6f22\u5b57 \u2194 \u901f\u6210</h1><input id="look-in" type="text" placeholder="\u8f38\u5165\u300c\u8aaa\u300d\u6216 yu" value="${esc(q)}">${body}<p class="lede">\u300c\u8aaa\u300d\u6b63\u78ba\u901f\u6210\u4fc2 YU\uff08\u535c\u5c71\uff09\u3002</p></section>`;
+    const q = (state._q || "").trim(); let body = "";
+    if (q && I.byHan.has(q[0])) { const r = info(q[0]); body = "<div class=\"char\">" + q[0] + "</div><p class=\"answer\">" + r.sc.toUpperCase() + "</p><p class=\"lede\">" + labelCode(r.sc) + " / " + r.cj.toUpperCase() + "</p>"; }
+    else if (q) { const hits = I.bySc.get(q.toLowerCase()) || []; body = hits.map((h) => "<span class=\"cand\">" + h + "</span>").join(" "); }
+    return "<section class=\"panel\"><h1>\u67e5\u78bc</h1><input id=\"look-in\" type=\"text\" value=\"" + q + "\">" + body + "<p class=\"lede\">\u8aaa = YU \u535c\u5c71</p></section>";
   }
   function htmlMe() {
-    return `<section class="panel"><div class="kicker">\u6211</div><h1>\u9032\u5ea6</h1><div class="stats"><div class="stat"><b>${state.streak || 0}</b><span>\u9023\u7e8c\u65e5</span></div><div class="stat"><b>${state.correct || 0}</b><span>\u62c6\u5572</span></div><div class="stat"><b>${acc()}%</b><span>\u6e96\u78ba\u7387</span></div></div><p class="lede">\u932f\u5b57\u672c ${state.wrongBook.length} \u00b7 \u6536\u85cf ${state.bookmarks.length} \u00b7 \u4eca\u65e5 ${state.todayCount}/20</p><div class="row"><button class="ghost" data-view="review">\u7747\u932f\u5b57\u672c</button><button class="ghost" data-view="lookup">\u67e5\u78bc</button><button class="ghost" id="btn-reset" type="button">\u6e05\u9032\u5ea6</button></div></section>`;
+    return "<section class=\"panel\"><h1>\u9032\u5ea6</h1><div class=\"stats\"><div class=\"stat\"><b>" + (state.streak||0) + "</b><span>\u9023\u7e8c\u65e5</span></div><div class=\"stat\"><b>" + (state.correct||0) + "</b><span>\u62c6\u5572</span></div><div class=\"stat\"><b>" + acc() + "%</b><span>\u6e96\u78ba\u7387</span></div></div><div class=\"row\"><button class=\"ghost\" data-view=\"review\">\u932f\u5b57\u672c</button><button class=\"ghost\" data-view=\"lookup\">\u67e5\u78bc</button><button class=\"ghost\" id=\"btn-reset\" type=\"button\">\u6e05\u9032\u5ea6</button></div></section>";
   }
   function render() {
     if (state.view !== "drill" && timer && !(drill && drill.timed)) { clearInterval(timer); timer = null; }
     syncChrome();
-    const fn = { home: htmlHome, learn: htmlLearn, roots: htmlRoots, rootquiz: htmlQuiz, drill: htmlDrill, timed: htmlDrill, type: htmlType, article: htmlArticle, review: htmlReview, lookup: htmlLookup, me: htmlMe }[state.view] || htmlHome;
+    const fn = { home: htmlHome, learn: htmlLearn, roots: htmlRoots, rootquiz: htmlQuiz, drill: htmlDrill, type: htmlType, article: htmlArticle, review: htmlReview, lookup: htmlLookup, me: htmlMe }[state.view] || htmlHome;
     $("main").innerHTML = fn();
     bind();
   }
@@ -178,7 +173,7 @@
     let i = (state._ai || 0) + 1;
     while (i < art.text.length && !I.byHan.has(art.text[i])) i += 1;
     state._ai = i; state._amiss = 0; typed = "";
-    if (i >= art.text.length) { finishLesson(state.articleId === "hk" ? "article-hk" : "article-hi"); toast("\u6253\u5b8c\u4e00\u7bc7"); go("home"); }
+    if (i >= art.text.length) { finishLesson(state.articleId === "hk" ? "article-hk" : "article-hi"); toast("\u6253\u5b8c"); go("home"); }
   }
   function checkArt() {
     const art = ARTICLES[state.articleId] || ARTICLES.hi;
@@ -207,8 +202,8 @@
     document.querySelectorAll("[data-pool]").forEach((b) => { if (b.dataset.view) return; b.onclick = () => { state.pool = b.dataset.pool; startDrill(state.pool, !!(drill && drill.timed)); render(); }; });
     document.querySelectorAll("[data-art]").forEach((b) => b.onclick = () => { state.articleId = b.dataset.art; state._ai = null; render(); });
     document.querySelectorAll("[data-quiz]").forEach((b) => b.onclick = () => {
-      if (b.dataset.quiz === quiz.ans) { quiz.streak += 1; quiz.n += 1; if (quiz.n >= 20) finishLesson("rootquiz"); startQuiz(); render(); }
-      else { quiz.streak = 0; toast("\u5514\u5572\uff0c\u6b63\u78ba\u4fc2 " + quiz.ans); }
+      if (b.dataset.quiz === quiz.ans) { quiz.streak += 1; quiz.n += 1; startQuiz(); render(); }
+      else { quiz.streak = 0; toast("\u5514\u5572 " + quiz.ans); }
     });
     document.querySelectorAll("[data-k]").forEach((b) => b.onclick = () => {
       typed = (typed + b.dataset.k).slice(-4);
@@ -220,12 +215,11 @@
     if ($("btn-check")) $("btn-check").onclick = checkDrill;
     if ($("btn-hint")) $("btn-hint").onclick = () => { if (drill) { drill.hint = Math.min(2, (drill.hint || 0) + 1); render(); } };
     if ($("btn-skip")) $("btn-skip").onclick = () => { startDrill(drill.pool, drill.timed); render(); };
-    if ($("btn-mark")) $("btn-mark").onclick = () => { toggleMark(drill.han); render(); };
-    if ($("type-in")) { $("type-in").focus(); $("type-in").oninput = () => { typed = $("type-in").value.toLowerCase(); render(); $("type-in").focus(); $("type-in").value = typed; }; }
-    if ($("look-in")) { $("look-in").focus(); $("look-in").oninput = () => { state._q = $("look-in").value; render(); const n = $("look-in"); if (n) { n.focus(); n.value = state._q; } }; }
+    if ($("type-in")) { $("type-in").focus(); $("type-in").oninput = () => { typed = $("type-in").value.toLowerCase(); render(); if ($("type-in")) { $("type-in").focus(); $("type-in").value = typed; } }; }
+    if ($("look-in")) { $("look-in").focus(); $("look-in").oninput = () => { state._q = $("look-in").value; render(); if ($("look-in")) { $("look-in").focus(); $("look-in").value = state._q; } }; }
     if ($("art-in")) { $("art-in").focus(); $("art-form").onsubmit = (e) => { e.preventDefault(); checkArt(); }; }
     if ($("btn-skip-art")) $("btn-skip-art").onclick = () => { advanceArt(); render(); };
-    if ($("btn-reset")) $("btn-reset").onclick = () => { if (confirm("\u6e05\u6652\u672c\u5730\u9032\u5ea6\uff1f")) { state = blank(); save(); render(); } };
+    if ($("btn-reset")) $("btn-reset").onclick = () => { if (confirm("\u6e05\u9032\u5ea6?")) { state = blank(); save(); render(); } };
   }
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && drill && state.view === "drill") { drill.hint = 2; render(); } });
   window.addEventListener("resize", () => syncChrome());
