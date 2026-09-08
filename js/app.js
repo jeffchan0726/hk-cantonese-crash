@@ -1,261 +1,234 @@
-function htmlHome() {
-  const p = load();
-  const next = (LESSONS.find((l) => !(p.lessonsDone || {})[l.id]) || LESSONS[0]);
-  const wrongN = Object.keys(p.wrongBook || {}).length;
-  return `<div class="home-grid"><div class="hero">
-      <div class="k">SUCHENG / QUICK</div>
-      <h2>只打頭碼同尾碼<br>就打到繁體中文。</h2>
-      <p class="tiny">速成 = 倉頡簡化版。記住 24 個字根，再練拆頭尾。例如「港」倉頡 <b>水廿金山</b>，速成就係 <b>水山 EU</b>。</p>
-      <p class="tiny pc-only">電腦版：左側選單切頁，拆碼／打字可用實體鍵盤。</p>
-      <p class="tiny phone-only">手機版：撟底下 tab，用螢幕鍵盤入碼。</p>
-      <div class="stats">
-        <div class="stat"><b>${p.streak || 0}</b><span>連續日</span></div>
-        <div class="stat"><b>${p.correct || 0}</b><span>拆啾</span></div>
-        <div class="stat"><b>${acc(p)}%</b><span>準確率</span></div>
-      </div>
-      <div class="bar"><i style="width:${Math.min(100, ((p.todayCount || 0) / DAILY_GOAL) * 100)}%"></i></div>
-      <p class="tiny">今日目標 ${p.todayCount || 0} / ${DAILY_GOAL}</p>
-    </div>
-    <div class="path">
-      <button class="task" data-go="next"><div><b>繼續：${next.title}</b><span>${next.blurb}</span></div><em>去</em></button>
-      <button class="task" data-go="learn"><div><b>課程路徑</b><span>字根 → 單碼 → 常用 → 粵語 → 限時 → 文章</span></div><em>去</em></button>
-      <button class="task" data-go="drill"><div><b>自由拆碼</b><span>常用 / 全部 / 難字 / 錯字本</span></div><em>去</em></button>
-      <button class="task" data-go="article"><div><b>文章練習</b><span>內建香港情景，可貼自訂文</span></div><em>去</em></button>
-      <button class="task" data-go="review"><div><b>錯字本 ${wrongN}</b><span>打錯自動收，打啾除名</span></div><em>去</em></button>
-      <button class="task" data-go="lookup"><div><b>查碼</b><span>漢字 ↔ 速成／倉頡</span></div><em>去</em></button>
-    </div></div>`;
-}
-function renderHome() {
-  $("view-home").innerHTML = htmlHome();
-  $("view-home").querySelectorAll("[data-go]").forEach((b) => {
-    b.onclick = () => {
-      const g = b.dataset.go;
-      if (g === "next") startLesson(LESSONS.find((l) => !(load().lessonsDone || {})[l.id]) || LESSONS[0]);
-      else if (g === "article") { state.article = { key: "hi", i: 0, misses: 0, typed: "" }; go("article"); }
-      else go(g);
-    };
-  });
-}
-function renderLearn() {
-  const p = load();
-  $("view-learn").innerHTML = `<h3>跟住條路徑學</h3><p class="tiny">先記字根，再拆碼，最後打整句。</p><div class="path lessons">${LESSONS.map((l) => { const done = p.lessonsDone && p.lessonsDone[l.id]; return `<button class="lesson ${done ? "done" : ""}" data-id="${l.id}"><div><b>${l.title}</b><span>${l.blurb}</span></div><em>${done ? "重溫" : "開始"}</em></button>`; }).join("")}</div>`;
-  $("view-learn").querySelectorAll("[data-id]").forEach((b) => { b.onclick = () => startLesson(LESSONS.find((x) => x.id === b.dataset.id)); });
-}
-function startLesson(lesson) {
-  state.lesson = lesson; state.i = 0; state.misses = 0; state.hintLevel = 0;
-  if (lesson.kind === "roots") { state.rootCat = "ALL"; go("learn"); renderRootsLesson(); return; }
-  if (lesson.kind === "rootquiz") { state.quiz = { i: 0, q: null }; go("learn"); renderRootQuiz(); return; }
-  if (lesson.kind === "drill") { state.mode = lesson.pool; go("drill"); return; }
-  if (lesson.kind === "timed") { state.mode = lesson.pool || "starter"; startTimer(lesson.secs || 60); go("drill"); return; }
-  if (lesson.kind === "article") { state.article = { key: lesson.article || "hi", i: 0, misses: 0, typed: "" }; go("article"); }
-}
-function renderRootsLesson() {
-  const p = load();
-  const keys = Object.keys(SUCHENG.map);
-  const show = keys.filter((k) => state.rootCat === "ALL" || state.rootCat.includes(k));
-  const cats = [["全部", "ALL"]].concat((SUCHENG.cats || []).map((c) => [c[0], c[1]]));
-  $("view-learn").innerHTML = `<h3>廿四字根鍵盤</h3><p class="tiny">撟一下標已記。已記 ${Object.keys(p.knownRad || {}).filter((k) => p.knownRad[k]).length} / 25。</p><div class="chips">${cats.map(([n, k]) => `<button class="chip ${state.rootCat === k ? "on" : ""}" data-cat="${k}">${n}</button>`).join("")}</div><div class="root-grid">${show.map((k) => `<button class="root ${p.knownRad[k] ? "known" : ""}" data-k="${k}"><b>${k}</b><span>${SUCHENG.map[k]}</span><i>${SUCHENG.aux[k] || ""}</i></button>`).join("")}</div><div class="row"><button class="btn primary" id="to-quiz">去測驗</button><button class="btn ghost" id="mark-all">全部標已記</button></div>`;
-  $("view-learn").querySelectorAll("[data-cat]").forEach((b) => { b.onclick = () => { state.rootCat = b.dataset.cat; renderRootsLesson(); }; });
-  $("view-learn").querySelectorAll("[data-k]").forEach((b) => {
-    b.onclick = () => {
-      const cur = save();
-      cur.knownRad[b.dataset.k] = !cur.knownRad[b.dataset.k];
-      localStorage.setItem(STORE, JSON.stringify(cur));
-      if (Object.keys(cur.knownRad).filter((k) => cur.knownRad[k]).length >= 24) finishLesson("roots");
-      renderRootsLesson();
-    };
-  });
-  $("to-quiz").onclick = () => startLesson(LESSONS.find((l) => l.id === "rootquiz"));
-  $("mark-all").onclick = () => { const known = {}; keys.forEach((k) => known[k] = true); save({ knownRad: known }); finishLesson("roots"); renderRootsLesson(); };
-}
-function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function makeQuiz() {
-  const keys = Object.keys(SUCHENG.map);
-  const k = keys[Math.floor(Math.random() * keys.length)];
-  const askKey = Math.random() < 0.5;
-  const opts = new Set([k]);
-  while (opts.size < 4) opts.add(keys[Math.floor(Math.random() * keys.length)]);
-  return { k, askKey, opts: shuffle([...opts]) };
-}
-function renderRootQuiz() {
-  if (!state.quiz.q) state.quiz.q = makeQuiz();
-  const q = state.quiz.q;
-  $("view-learn").innerHTML = `<h3>字根測驗　${state.quiz.i + 1}/20</h3><div class="card flash">${q.askKey ? `<div class="tiny">呢個鍵係邊個字根？</div><div class="keyname">${q.k}</div>` : `<div class="tiny">呢個字根係邊個鍵？</div><div class="rad">${SUCHENG.map[q.k]}</div>`}</div><div class="choices">${q.opts.map((k) => `<button class="choice" data-k="${k}">${q.askKey ? SUCHENG.map[k] : k + "　" + SUCHENG.map[k]}</button>`).join("")}</div>`;
-  $("view-learn").querySelectorAll(".choice").forEach((b) => {
-    b.onclick = () => {
-      const ok = b.dataset.k === q.k;
-      const p = save();
-      save({ correct: (p.correct || 0) + (ok ? 1 : 0), wrong: (p.wrong || 0) + (ok ? 0 : 1) });
-      addToday(1);
-      toast(ok ? "啾！" : "係 " + q.k + "＝" + SUCHENG.map[q.k]);
-      setTimeout(() => { state.quiz.i += 1; if (state.quiz.i >= 20) { finishLesson("rootquiz"); go("home"); return; } state.quiz.q = null; renderRootQuiz(); }, 400);
-    };
-  });
-}
-function kbHtml(typed, nextKeys) {
-  const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
-  const typedU = (typed || "").toUpperCase();
-  const next = (nextKeys || []).map((k) => k.toUpperCase());
-  return rows.map((row) => `<div class="kb-row">${[...row].map((k) => { const rad = SUCHENG.map[k]; return `<button type="button" class="key ${typedU.includes(k) ? "on" : ""} ${next.includes(k) ? "next" : ""}" data-k="${k}" ${rad ? "" : "disabled"}>${k}<i>${rad || ""}</i></button>`; }).join("")}</div>`).join("");
-}
-function bindKb(box, inp) {
-  if (!box || !inp) return;
-  box.querySelectorAll("button[data-k]").forEach((b) => { b.onclick = () => { if (inp.value.length >= 2) inp.value = ""; inp.value += b.dataset.k; inp.focus(); }; });
-}
-function renderDrill() {
-  const list = pool();
-  if (!list.length) { $("view-drill").innerHTML = `<div class="card"><p>呢個字庫暫時冇字。</p></div>`; return; }
-  if (state.i >= list.length) state.i = 0;
-  const han = list[state.i];
-  const rec = idx().byHan[han];
-  const modes = [["starter", "常用"], ["cantonese", "粵語"], ["singles", "單碼"], ["hard", "難字"], ["all", "全部"], ["wrong", "錯字本"], ["mark", "書籤"]];
-  const nextKeys = [];
-  if (state.hintLevel >= 1 && rec.sc[0]) nextKeys.push(rec.sc[0]);
-  if (state.hintLevel >= 2 && rec.sc[1]) nextKeys.push(rec.sc[1]);
-  const marked = load().bookmarks && load().bookmarks[han];
-  $("view-drill").innerHTML = `<div class="chips">${modes.map(([k, n]) => `<button class="chip ${state.mode === k ? "on" : ""}" data-mode="${k}">${n}</button>`).join("")}<button class="chip ${state.timed.running ? "on" : ""}" id="timed-btn">60秒</button></div>${state.timed.running ? `<div class="timer" id="timer-lab">${state.timed.left}s　${state.timed.ok} 啾</div>` : ""}<div class="split"><div class="drill-card"><div class="tiny">${(modes.find((m) => m[0] === state.mode) || [])[1] || ""} ${state.i + 1}/${list.length}</div><div class="big" id="drill-char">${han}</div><form id="drill-form"><input class="box" id="drill-input" maxlength="2" autocapitalize="off" autocomplete="off" inputmode="text" placeholder="頭尾碼，例如 EU" /><div class="row"><button class="btn primary" type="submit">核對</button><button class="btn" type="button" id="drill-show">睇答案</button><button class="btn ghost" type="button" id="drill-next">下一字</button><button class="btn ghost" type="button" id="drill-mark">${marked ? "★" : "☆"}</button></div></form><div class="feedback" id="drill-ans"></div></div><div class="kb-pane"><div class="kb" id="drill-kb">${kbHtml("", nextKeys)}</div><p class="tiny rule">只取倉頡<strong>第一碼 + 最後一碼</strong>。錯一次亮頭碼，兩次亮全碼。</p><p class="tiny pc-only">電腦：打英文字母，Enter 核對，Esc 睇答案。</p><p class="tiny phone-only">手機：撟下面字根鍵入碼。</p></div></div>`;
-  $("view-drill").querySelectorAll("[data-mode]").forEach((c) => { c.onclick = () => { state.mode = c.dataset.mode; state.i = 0; state.misses = 0; state.hintLevel = 0; renderDrill(); }; });
-  $("timed-btn").onclick = () => { state.timed.running ? stopTimer() : startTimer(60); renderDrill(); };
-  bindKb($("drill-kb"), $("drill-input"));
-  $("drill-show").onclick = () => { state.hintLevel = 2; $("drill-ans").innerHTML = `<b>${rec.sc.toUpperCase()}</b>　${labelCode(rec.sc)}<div class="tiny">倉頡 ${rec.cj.toUpperCase()}</div>`; $("drill-kb").innerHTML = kbHtml("", rec.sc.split("")); bindKb($("drill-kb"), $("drill-input")); };
-  $("drill-next").onclick = () => { state.i += 1; state.misses = 0; state.hintLevel = 0; renderDrill(); };
-  $("drill-mark").onclick = () => { toggleMark(han); renderDrill(); };
-  $("drill-form").onsubmit = (e) => {
-    e.preventDefault();
-    const guess = $("drill-input").value.trim().toLowerCase().replace(/[^a-z]/g, "");
-    const ok = guess === rec.sc;
-    const cur = save();
-    save({ correct: (cur.correct || 0) + (ok ? 1 : 0), wrong: (cur.wrong || 0) + (ok ? 0 : 1) });
-    if (ok) {
-      markRight(han); addToday(1); if (state.timed.running) state.timed.ok += 1;
-      if (state.lesson && state.lesson.kind === "drill" && state.lesson.goal && state.i + 1 >= Math.min(state.lesson.goal, list.length)) finishLesson(state.lesson.id);
-      setTimeout(() => { state.i += 1; state.misses = 0; state.hintLevel = 0; renderDrill(); }, 350);
-    } else {
-      markWrong(han); state.misses += 1; if (state.timed.running) state.timed.bad += 1;
-      state.hintLevel = Math.min(2, state.misses);
-      $("drill-ans").innerHTML = state.misses >= 2 ? `<span class="bad">唔係 ${guess.toUpperCase() || "空白"}</span> → <b>${rec.sc.toUpperCase()}</b>　${labelCode(rec.sc)}` : `<span class="bad">再試。頭碼已經亮咗。</span>`;
-      $("drill-kb").innerHTML = kbHtml("", rec.sc.split("").slice(0, state.hintLevel));
-      bindKb($("drill-kb"), $("drill-input"));
-    }
+(function () {
+  const STORE = "sucheng-hk-v3";
+  const TABS = [
+    { id: "home", icon: "\ud83c\udfe0", label: "\u4eca\u65e5" },
+    { id: "learn", icon: "\ud83d\udcd8", label: "\u8ab2\u7a0b" },
+    { id: "drill", icon: "\u2733\ufe0f", label: "\u62c6\u78bc" },
+    { id: "type", icon: "\u2328\ufe0f", label: "\u6253\u5b57" },
+    { id: "article", icon: "\ud83d\udcdd", label: "\u6587\u7ae0" },
+    { id: "me", icon: "\ud83d\udc64", label: "\u6211" }
+  ];
+  const LESSONS = [
+    { id: "roots", title: "\u2460 \u5eff\u56db\u5b57\u6839", blurb: "\u5148\u8a8d\u9375\u76e4\u3002", kind: "roots", goal: 24 },
+    { id: "rootquiz", title: "\u2461 \u5b57\u6839\u6e2c\u9a57", blurb: "\u9023\u4e2d\u4e09\u6b21\u7576\u8a18\u4f4f\u3002", kind: "rootquiz", goal: 20 },
+    { id: "singles", title: "\u2462 \u55ae\u78bc\u5b57", blurb: "\u65e5=A\u3001\u6c34=E\u3002", kind: "drill", pool: "singles", goal: 24 },
+    { id: "easy2", title: "\u2463 \u5169\u78bc\u5e38\u7528", blurb: "\u982d\u5c3e\u5169\u78bc\u3002", kind: "drill", pool: "starter", goal: 30 },
+    { id: "cantonese", title: "\u2464 \u7cb5\u8a9e\u53e3\u8a9e\u5b57", blurb: "\u9999\u6e2f\u65e5\u5e38\u5b57\u3002", kind: "drill", pool: "cantonese", goal: 20 },
+    { id: "hard", title: "\u2465 \u96e3\u62c6\u5b57", blurb: "\u9577\u78bc\u53ea\u53d6\u982d\u5c3e\u3002", kind: "drill", pool: "hard", goal: 20 },
+    { id: "timed", title: "\u2466 \u516d\u5341\u79d2\u885d\u523a", blurb: "\u4e00\u5206\u9418\u62c6\u5e7e\u591a\u96bb\u3002", kind: "timed", pool: "starter", secs: 60 },
+    { id: "article-hi", title: "\u2467 \u6587\u7ae0\uff1a\u6253\u62db\u547c", blurb: "\u6574\u53e5\u6253\u3002", kind: "article", article: "hi" },
+    { id: "article-hk", title: "\u2468 \u6587\u7ae0\uff1a\u9999\u6e2f\u751f\u6d3b", blurb: "\u5730\u9435\u3001\u8336\u9910\u5ef3\u3002", kind: "article", article: "hk" }
+  ];
+  const ARTICLES = {
+    hi: { title: "\u6253\u62db\u547c", text: "\u4f60\u597d\u3002\u8acb\u554f\u800c\u5bb6\u5e7e\u9ede\uff1f\u5514\u8a72\u6652\u3002\u5c0d\u5514\u4f4f\u3002\u591a\u8b1d\u4f60\u5e6b\u624b\u3002\u518d\u898b\u3002" },
+    hk: { title: "\u9999\u6e2f\u751f\u6d3b", text: "\u6211\u55ba\u9999\u6e2f\u4f4f\u3002\u671d\u65e9\u642d\u5730\u9435\u53bb\u516c\u53f8\u3002\u4e2d\u5348\u98df\u98ef\u98f2\u8336\u3002\u591c\u665a\u8fd4\u5c4b\u4f01\u7747\u96fb\u8996\u3002" },
+    food: { title: "\u8336\u9910\u5ef3", text: "\u5514\u8a72\uff0c\u8981\u4e00\u500b\u83e0\u863f\u5305\u3001\u51cd\u6ab8\u8336\u3002\u5c11\u751c\u3002\u57cb\u55ae\u3002" },
+    ask: { title: "\u554f\u8def", text: "\u8acb\u554f\u53bb\u706b\u8eca\u7ad9\u9ede\u884c\uff1f\u4e00\u76f4\u884c\u7136\u5f8c\u8f49\u53f3\u3002\u591a\u8b1d\u3002" }
   };
-  setTimeout(() => { const i = $("drill-input"); if (i) i.focus(); }, 20);
-}
-function startTimer(secs) {
-  stopTimer();
-  state.timed = { left: secs, ok: 0, bad: 0, running: true, id: null };
-  state.i = Math.floor(Math.random() * Math.max(1, pool().length));
-  state.misses = 0; state.hintLevel = 0;
-  state.timed.id = setInterval(() => {
-    state.timed.left -= 1;
-    const lab = $("timer-lab");
-    if (lab) lab.textContent = state.timed.left + "s　" + state.timed.ok + " 啾";
-    if (state.timed.left <= 0) { stopTimer(); finishLesson("timed"); toast("時間到：啾 " + state.timed.ok); go("home"); }
-  }, 1000);
-}
-function stopTimer() {
-  if (state.timed.id) clearInterval(state.timed.id);
-  state.timed.running = false; state.timed.id = null;
-}
-function renderType() {
-  $("view-type").innerHTML = `<div class="chips"><button class="chip on">網頁鍵盤</button><button class="chip" id="to-art">文章練習</button></div><div class="split"><div><div class="out" id="out"></div><div class="tiny" id="code-now">未入碼</div><div class="cands" id="cands"></div><div class="row"><button class="btn" id="type-bs">刪</button><button class="btn" id="type-space">清碼</button><button class="btn" id="copy-out">複製</button><button class="btn ghost" id="type-clear">清空</button></div></div><div class="kb-pane"><div class="kb" id="kb">${kbHtml(state.typed, [])}</div><p class="tiny pc-only">電腦：實體鍵盤打碼，數字鍵 1–9 擇字，空白鍵清碼。</p><p class="tiny phone-only">手機：撟字根鍵，再擇候選字。</p></div></div>`;
-  $("to-art").onclick = () => go("article");
-  $("kb").querySelectorAll("button[data-k]").forEach((b) => { b.onclick = () => { if (state.typed.length >= 2) state.typed = ""; state.typed += b.dataset.k.toLowerCase(); renderType(); }; });
-  const code = state.typed.toLowerCase();
-  $("code-now").textContent = code ? code.toUpperCase() + "　" + labelCode(code) : "未入碼";
-  const list = code ? (idx().bySc[code] || []) : [];
-  $("cands").innerHTML = list.slice(0, 24).map((han, i) => `<button class="cand" data-h="${han}"><em>${i + 1}</em>${han}</button>`).join("") || (code ? "<span class='tiny'>呢個碼字庫未收</span>" : "");
-  $("cands").querySelectorAll("button").forEach((b) => { b.onclick = () => { state.picked.push(b.dataset.h); state.typed = ""; save({ typedChars: (load().typedChars || 0) + 1 }); addToday(1); renderType(); }; });
-  $("out").textContent = state.picked.join("") || "打頭尾碼，再擇字";
-  $("type-clear").onclick = () => { state.typed = ""; state.picked = []; renderType(); };
-  $("type-bs").onclick = () => { if (state.typed) state.typed = state.typed.slice(0, -1); else state.picked.pop(); renderType(); };
-  $("type-space").onclick = () => { state.typed = ""; renderType(); };
-  $("copy-out").onclick = () => { const t = state.picked.join(""); if (t) navigator.clipboard.writeText(t); };
-}
-function articleChars() { return [...((ARTICLES[state.article.key] && ARTICLES[state.article.key].text) || "")]; }
-function renderArticle() {
-  const art = ARTICLES[state.article.key] || ARTICLES.hi;
-  const chars = articleChars();
-  if (state.article.i >= chars.length) {
-    if (state.article.key === "hi") finishLesson("article-hi");
-    if (state.article.key === "hk") finishLesson("article-hk");
-    $("view-article").innerHTML = `<div class="card"><h3>打完「${art.title}」</h3><div class="row"><button class="btn primary" id="again">再打一次</button><button class="btn" id="back-home">返今日</button></div></div>`;
-    $("again").onclick = () => { state.article.i = 0; state.article.misses = 0; renderArticle(); };
-    $("back-home").onclick = () => go("home");
-    return;
+  const KEYS = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+  const blank = () => ({ view:"home", pool:"starter", articleId:"hi", knownRad:{}, correct:0, wrong:0, streak:0, lastDay:"", todayCount:0, todayDate:"", wrongBook:[], bookmarks:[], lessonsDone:{} });
+  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "{}"); } catch (e) { return {}; } }
+  let state = Object.assign(blank(), load());
+  let drill = null, quiz = null, typed = "", timer = null, remain = 0;
+  function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
+  function $(id) { return document.getElementById(id); }
+  function isPc() { return window.matchMedia("(min-width: 860px)").matches; }
+  function today() { return new Date().toISOString().slice(0, 10); }
+  function toast(msg) { const el = $("toast"); el.hidden = false; el.textContent = msg; clearTimeout(toast._t); toast._t = setTimeout(() => { el.hidden = true; }, 1600); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&", "<":"<", ">":">", '"':""", "'":"&#39;" }[c])); }
+  function idx() {
+    const byHan = new Map(), bySc = new Map();
+    (SUCHENG.chars || []).forEach((row) => {
+      const han = row[0], cj = row[1], sc = (row[2] || "").toLowerCase();
+      if (han.length !== 1) return;
+      if (!byHan.has(han)) byHan.set(han, { han, cj, sc });
+      if (!bySc.has(sc)) bySc.set(sc, []);
+      bySc.get(sc).push(han);
+    });
+    return { byHan, bySc };
   }
-  const ch = chars[state.article.i];
-  const rec = idx().byHan[ch];
-  if (!rec && /[\s.,!?。，、！？：:；;「」『』（）()…—\-—]/.test(ch)) { state.article.i += 1; renderArticle(); return; }
-  const nextKeys = rec && state.article.misses >= 1 ? rec.sc.split("").slice(0, state.article.misses >= 2 ? 2 : 1) : [];
-  $("view-article").innerHTML = `<div class="chips">${Object.keys(ARTICLES).map((k) => `<button class="chip ${state.article.key === k ? "on" : ""}" data-k="${k}">${ARTICLES[k].title}</button>`).join("")}</div><div class="split"><div><div class="passage">${chars.map((c, i) => `<span class="${i < state.article.i ? "done" : i === state.article.i ? "cur" : "todo"}">${c}</span>`).join("")}</div><p class="tiny">${art.title}　${state.article.i + 1}/${chars.length}${rec ? "" : "　標點跳過"}</p><input class="box" id="art-input" maxlength="2" autocapitalize="off" autocomplete="off" inputmode="text" placeholder="${rec ? "輸入頭尾碼" : "撟下一字"}" /><div class="row"><button class="btn primary" id="art-ok">${rec ? "核對" : "下一字"}</button><button class="btn" id="art-hint">提示</button><button class="btn ghost" id="art-skip">跳過</button></div><textarea class="box" id="custom-art" placeholder="貼一段繁體中文"></textarea><div class="row"><button class="btn" id="use-custom">用呢段</button></div></div><div class="kb-pane"><div class="kb" id="art-kb">${kbHtml("", nextKeys)}</div><p class="tiny pc-only">電腦：打頭尾碼再 Enter。標點會自動跳過。</p><p class="tiny phone-only">手機：撟字根鍵，再撟核對。</p></div></div>`;
-  $("view-article").querySelectorAll("[data-k]").forEach((b) => { b.onclick = () => { state.article = { key: b.dataset.k, i: 0, misses: 0, typed: "" }; renderArticle(); }; });
-  bindKb($("art-kb"), $("art-input"));
-  $("art-ok").onclick = () => checkArticle(true);
-  $("art-hint").onclick = () => { if (!rec) return; state.article.misses = 2; toast(rec.sc.toUpperCase()); renderArticle(); };
-  $("art-skip").onclick = () => { state.article.i += 1; state.article.misses = 0; renderArticle(); };
-  $("art-input").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); checkArticle(true); } };
-  $("use-custom").onclick = () => { const t = $("custom-art").value.trim(); if (!t) return; ARTICLES.custom = { title: "自訂", text: t }; state.article = { key: "custom", i: 0, misses: 0, typed: "" }; renderArticle(); };
-  if (rec) setTimeout(() => $("art-input").focus(), 20);
-}
-function checkArticle(force) {
-  const ch = articleChars()[state.article.i];
-  const rec = idx().byHan[ch];
-  if (!rec) { state.article.i += 1; renderArticle(); return; }
-  const guess = ($("art-input").value || "").trim().toLowerCase().replace(/[^a-z]/g, "");
-  if (guess === rec.sc) { markRight(ch); addToday(1); save({ typedChars: (load().typedChars || 0) + 1, correct: (load().correct || 0) + 1 }); state.article.i += 1; state.article.misses = 0; renderArticle(); return; }
-  if (!force && guess.length < 2) return;
-  markWrong(ch); save({ wrong: (load().wrong || 0) + 1 }); state.article.misses += 1; toast("再試"); renderArticle();
-}
-function renderReview() {
-  const p = load();
-  const wrong = Object.entries(p.wrongBook || {}).sort((a, b) => b[1].n - a[1].n);
-  const marks = Object.keys(p.bookmarks || {});
-  $("view-review").innerHTML = `<h3>錯字本</h3><div class="wrap">${wrong.length ? wrong.map(([h]) => `<b>${h}</b>`).join(" ") : "<span class='tiny'>未有錯字</span>"}</div><div class="row"><button class="btn primary" id="drill-wrong">練錯字</button></div><h3>書籤</h3><div class="wrap">${marks.length ? marks.map((h) => `<b>${h}</b>`).join(" ") : "<span class='tiny'>拆碼可加書籤</span>"}</div><div class="row"><button class="btn" id="drill-mark">練書籤</button></div>`;
-  $("drill-wrong").onclick = () => { state.mode = "wrong"; state.i = 0; go("drill"); };
-  $("drill-mark").onclick = () => { state.mode = "mark"; state.i = 0; go("drill"); };
-}
-function renderLookup() {
-  $("view-lookup").innerHTML = `<h3>查碼</h3><input class="search" id="q" placeholder="查漢字或速成碼，例如 香 或 HA" /><div id="look-res"></div>`;
-  const run = () => {
-    const q = ($("q").value || "").trim();
-    const box = $("look-res");
-    if (!q) { box.innerHTML = "<p class='tiny'>輸入漢字或一至兩個英文字母</p>"; return; }
-    const low = q.toLowerCase();
-    if (/^[a-z]{1,2}$/.test(low)) { const list = idx().bySc[low] || []; box.innerHTML = `<p>${low.toUpperCase()}　${labelCode(low)}　${list.length} 字</p><div class="wrap">${list.map((h) => `<b>${h}</b>`).join(" ")}</div>`; return; }
-    box.innerHTML = [...q].map((ch) => { const rec = idx().byHan[ch]; return rec ? `<div class="look-item"><b>${ch}</b><div>速成 <strong>${rec.sc.toUpperCase()}</strong>　${labelCode(rec.sc)}</div><div class="tiny">倉頡 ${rec.cj.toUpperCase()}</div></div>` : `<div class="look-item"><b>${ch}</b> 未收錄</div>`; }).join("");
-  };
-  $("q").addEventListener("input", run); run();
-}
-function renderMe() {
-  const p = save();
-  $("view-me").innerHTML = `<h3>進度</h3><div class="stats"><div class="stat"><b>${p.streak || 0}</b><span>連續日</span></div><div class="stat"><b>${p.correct || 0}</b><span>拆啾</span></div><div class="stat"><b>${acc(p)}%</b><span>準確率</span></div></div><p class="tiny">打字 ${p.typedChars || 0} 字　今日 ${p.todayCount || 0}/${DAILY_GOAL}　字庫 ${unique(SUCHENG.chars.map((x) => x[0]).filter((h) => h && h.length === 1)).length} 字</p><div class="path"><button class="task" id="go-look"><div><b>查碼</b><span>漢字 ↔ 速成／倉頡</span></div><em>去</em></button><button class="task" id="go-rev"><div><b>錯字本／書籤</b><span>${Object.keys(p.wrongBook || {}).length} 隻錯字</span></div><em>去</em></button></div><button class="btn ghost" id="reset">清除進度</button>`;
-  $("go-look").onclick = () => go("lookup");
-  $("go-rev").onclick = () => go("review");
-  $("reset").onclick = () => { if (confirm("清進度？")) { localStorage.removeItem(STORE); render(); } };
-}
-window.addEventListener("DOMContentLoaded", () => {
-  save(); idx();
-  document.querySelectorAll(".tab").forEach((t) => { t.onclick = () => { if (t.dataset.view === "learn") state.lesson = null; go(t.dataset.view); }; });
-  const goHome = () => go("home");
-  if ($("brand-btn")) $("brand-btn").onclick = goHome;
-  if ($("side-brand")) $("side-brand").onclick = goHome;
-  if ($("goal-pill")) $("goal-pill").onclick = () => go("learn");
-  window.addEventListener("resize", () => { const pill = $("device-pill"); if (pill) pill.textContent = isPc() ? "電腦版" : "手機版"; });
-  document.addEventListener("keydown", (e) => {
-    if (e.target && (e.target.tagName === "TEXTAREA" || e.target.id === "q" || e.target.id === "custom-art")) return;
-    if (state.view === "drill") {
-      if (e.key === "Escape") { const b = $("drill-show"); if (b) b.click(); }
-      if (e.key === "Enter" && e.target && e.target.id !== "drill-input") { const f = $("drill-form"); if (f) f.requestSubmit(); }
-      return;
+  const I = idx();
+  function info(han) { return I.byHan.get(han); }
+  function labelCode(sc) { if (!sc) return ""; return sc.toUpperCase().split("").map((k) => (SUCHENG.map[k] || "") + k).join(" "); }
+  function poolOf(name) {
+    if (name === "wrong") return state.wrongBook.slice();
+    if (name === "mark") return state.bookmarks.slice();
+    if (name === "all") return SUCHENG.chars.map((r) => r[0]).filter((h, i, a) => a.indexOf(h) === i && I.byHan.has(h));
+    return (SUCHENG[name] || SUCHENG.starter).filter((h) => I.byHan.has(h));
+  }
+  function pick(list) { return list.length ? list[Math.floor(Math.random() * list.length)] : null; }
+  function acc() { const t = state.correct + state.wrong; return t ? Math.round((state.correct / t) * 100) : 0; }
+  function bumpDay() {
+    const d = today();
+    if (state.todayDate !== d) { state.todayDate = d; state.todayCount = 0; }
+    if (state.lastDay !== d) {
+      const y = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      state.streak = state.lastDay === y ? (state.streak || 0) + 1 : 1;
+      state.lastDay = d;
     }
-    if (state.view === "article") { if (e.key === "Enter") { e.preventDefault(); checkArticle(true); } return; }
-    if (state.view !== "type") return;
-    if (e.key === "Backspace") { e.preventDefault(); const b = $("type-bs"); if (b) b.click(); }
-    if (e.key === " ") { e.preventDefault(); const b = $("type-space"); if (b) b.click(); }
-    const k = e.key.toUpperCase();
-    if (SUCHENG.map[k]) { e.preventDefault(); if (state.typed.length >= 2) state.typed = ""; state.typed += k.toLowerCase(); renderType(); }
-    if (/^[1-9]$/.test(e.key)) { const btns = $("cands") ? $("cands").querySelectorAll("button") : []; if (btns[Number(e.key) - 1]) btns[Number(e.key) - 1].click(); }
-  });
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+  function addToday() { bumpDay(); state.todayCount += 1; save(); syncChrome(); }
+  function markRight(han) { state.correct += 1; state.wrongBook = state.wrongBook.filter((x) => x !== han); addToday(); }
+  function markWrong(han) { state.wrong += 1; if (han && !state.wrongBook.includes(han)) state.wrongBook.push(han); save(); }
+  function toggleMark(han) { const i = state.bookmarks.indexOf(han); if (i >= 0) state.bookmarks.splice(i, 1); else state.bookmarks.push(han); save(); }
+  function finishLesson(id) { state.lessonsDone[id] = true; save(); }
+  function syncChrome() {
+    bumpDay();
+    $("device-pill").textContent = isPc() ? "\u96fb\u8166\u7248" : "\u624b\u6a5f\u7248";
+    $("goal-pill").textContent = "\u4eca\u65e5 " + state.todayCount + "/20";
+    const html = TABS.map((t) => `<button type="button" data-view="${t.id}" class="${state.view === t.id || (t.id === "learn" && ["roots","rootquiz"].includes(state.view)) ? "on" : ""}">${t.icon} ${t.label}</button>`).join("");
+    $("side-tabs").innerHTML = html;
+    $("tabbar").innerHTML = html;
+  }
+  function go(view) { state.view = view; save(); render(); }
+  function startDrill(pool, timed) {
+    const han = pick(poolOf(pool));
+    drill = han ? { han, pool, misses: 0, hint: 0, timed: !!timed, got: (drill && drill.timed && timed) ? drill.got : 0 } : null;
+    typed = "";
+    if (timed && !timer) {
+      remain = 60;
+      timer = setInterval(() => {
+        remain -= 1;
+        if (remain <= 0) { clearInterval(timer); timer = null; toast("\u6642\u9593\u5230\uff1a\u62c6\u5572 " + (drill ? drill.got : 0) + " \u96bb"); go("home"); }
+        else if (state.view === "drill") render();
+      }, 1000);
+    }
+  }
+  function kbHtml(hintKeys) {
+    const set = new Set((hintKeys || "").toUpperCase().split(""));
+    return `<div class="kb">${KEYS.map((row) => `<div class="kb-row">${row.split("").map((k) => `<button type="button" class="k${set.has(k) ? " hint" : ""}" data-k="${k.toLowerCase()}"><b>${k}</b><small>${SUCHENG.map[k] || ""}</small></button>`).join("")}</div>`).join("")}</div>`;
+  }
+  function htmlHome() {
+    const next = LESSONS.find((l) => !state.lessonsDone[l.id]) || LESSONS[0];
+    return `<div class="home-grid"><section class="hero"><div class="kicker">SUCHENG / QUICK</div><h1>\u53ea\u6253\u982d\u78bc\u540c\u5c3e\u78bc<br>\u5c31\u6253\u5230\u7e41\u9ad4\u4e2d\u6587\u3002</h1><p class="lede">\u901f\u6210 = \u5009\u9821\u7c21\u5316\u7248\u3002\u300c\u6e2f\u300d\u901f\u6210 <b>\u6c34\u5c71 EU</b>\u3002\u300c\u8aaa\u300d\u901f\u6210 <b>\u535c\u5c71 YU</b>\u3002</p><div class="stats"><div class="stat"><b>${state.streak || 0}</b><span>\u9023\u7e8c\u65e5</span></div><div class="stat"><b>${state.correct || 0}</b><span>\u62c6\u5572</span></div><div class="stat"><b>${acc()}%</b><span>\u6e96\u78ba\u7387</span></div></div><p class="lede" style="margin:14px 0 0">\u4eca\u65e5\u76ee\u6a19 ${state.todayCount || 0} / 20</p></section><section class="path"><article class="path-card"><div><h3>\u7e7c\u7e8c\uff1a${esc(next.title)}</h3><p>${esc(next.blurb)}</p></div><button class="go" data-go="${next.id}">\u53bb</button></article><article class="path-card"><div><h3>\u8ab2\u7a0b\u8def\u5f91</h3><p>\u5b57\u6839 \u2192 \u55ae\u78bc \u2192 \u5e38\u7528 \u2192 \u7cb5\u8a9e \u2192 \u9650\u6642 \u2192 \u6587\u7ae0</p></div><button class="go" data-view="learn">\u53bb</button></article><article class="path-card"><div><h3>\u81ea\u7531\u62c6\u78bc</h3><p>\u5e38\u7528 / \u5168\u90e8 / \u96e3\u5b57 / \u932f\u5b57\u672c</p></div><button class="go" data-view="drill">\u53bb</button></article><article class="path-card"><div><h3>\u6587\u7ae0\u7df4\u7fd2</h3><p>\u5167\u5efa\u9999\u6e2f\u60c5\u666f</p></div><button class="go" data-view="article">\u53bb</button></article><article class="path-card"><div><h3>\u932f\u5b57\u672c ${state.wrongBook.length}</h3><p>\u6253\u932f\u81ea\u52d5\u6536</p></div><button class="go" data-view="review">\u53bb</button></article><article class="path-card"><div><h3>\u67e5\u78bc</h3><p>\u6f22\u5b57 \u2194 \u901f\u6210\uff0f\u5009\u9821</p></div><button class="go" data-view="lookup">\u53bb</button></article></section></div>`;
+  }
+  function htmlLearn() {
+    return `<section class="panel"><div class="kicker">\u8ab2\u7a0b</div><h1>\u4e5d\u8ab2\u7531\u6dfa\u5165\u6df1</h1><div class="path">${LESSONS.map((l) => `<article class="path-card"><div><h3>${esc(l.title)} ${state.lessonsDone[l.id] ? "\u2713" : ""}</h3><p>${esc(l.blurb)}</p></div><button class="go" data-go="${l.id}">\u53bb</button></article>`).join("")}</div></section>`;
+  }
+  function htmlRoots() {
+    return `<section class="panel"><div class="kicker">\u5b57\u6839</div><h1>\u5eff\u56db\u5b57\u6839</h1><p class="lede">X \u4fc2\u96e3\u5b57\u9375\uff0c\u6b63\u5e38\u5514\u4f7f\u6253\u982d\u5c3e\u3002</p><div class="root-grid">${"ABCDEFGHIJKLMNOPQRSTUVWY".split("").map((k) => `<div class="root"><b>${SUCHENG.map[k]}</b><span>${k} \u00b7 ${esc(SUCHENG.mnemonics[k] || "")}</span></div>`).join("")}</div><div class="row" style="margin-top:16px"><button class="btn" data-go="rootquiz">\u53bb\u6e2c\u9a57</button><button class="ghost" data-view="learn">\u8fd4\u8ab2\u7a0b</button></div></section>`;
+  }
+  function startQuiz() {
+    const keys = "ABCDEFGHIJKLMNOPQRSTUVWY".split("");
+    const ans = pick(keys); const opts = [ans];
+    while (opts.length < 4) { const k = pick(keys); if (!opts.includes(k)) opts.push(k); }
+    opts.sort(() => Math.random() - 0.5);
+    quiz = { ans, opts, streak: (quiz && quiz.streak) || 0, n: (quiz && quiz.n) || 0 };
+  }
+  function htmlQuiz() {
+    if (!quiz) startQuiz();
+    return `<section class="panel"><div class="kicker">\u5b57\u6839\u6e2c\u9a57</div><h1>\u300c${SUCHENG.map[quiz.ans]}\u300d\u4fc2\u908a\u7c92\u9375\uff1f</h1><p class="lede">${esc(SUCHENG.mnemonics[quiz.ans] || "")} \u00b7 \u9023\u4e2d ${quiz.streak} \u6b21</p><div class="quiz-opts">${quiz.opts.map((k) => `<button type="button" data-quiz="${k}">${k}<br><small>${SUCHENG.map[k]}</small></button>`).join("")}</div></section>`;
+  }
+  function htmlDrill() {
+    if (!drill || !info(drill.han)) startDrill(state.pool || "starter", !!(drill && drill.timed));
+    if (!drill) return `<section class="panel"><p>\u5462\u500b\u5b57\u5eab\u66ab\u6642\u5187\u5b57\u3002</p></section>`;
+    const row = info(drill.han);
+    const hintKeys = drill.hint === 1 ? row.sc[0] : drill.hint >= 2 ? row.sc : "";
+    const showAns = drill.hint >= 2 ? row.sc.toUpperCase() + " \u00b7 " + labelCode(row.sc) : drill.hint === 1 ? row.sc[0].toUpperCase() + "\u2026" : "";
+    return `<div class="split"><section class="drill-card"><div class="chips">${[["starter","\u5e38\u7528"],["cantonese","\u7cb5\u8a9e"],["hard","\u96e3\u5b57"],["singles","\u55ae\u78bc"],["wrong","\u932f\u5b57\u672c"],["all","\u5168\u90e8"]].map(([id, lab]) => `<button class="chip${(state.pool||"starter")===id?" on":""}" data-pool="${id}">${lab}</button>`).join("")}</div>${drill.timed ? `<p class="lede">\u5269 ${remain}s \u00b7 \u5df2\u62c6\u5572 ${drill.got}</p>` : ""}<div class="char">${drill.han}</div><div class="meta">${drill.hint >= 2 ? "\u5009\u9821 " + row.cj.toUpperCase() : "\u932f\u4e00\u6b21\u4eae\u982d\u78bc\uff0c\u932f\u5169\u6b21\u51fa\u7b54\u6848"}</div><div class="answer">${esc(showAns)}</div><form id="drill-form"><input id="drill-in" type="text" maxlength="4" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="\u6253\u982d\u5c3e\u78bc\uff0c\u4f8b\u5982 yu" value="${esc(typed)}"></form><p class="feedback" id="drill-fb"></p><div class="row"><button class="btn" id="btn-check" type="button">\u6838\u5c0d</button><button class="ghost" id="btn-hint" type="button">\u63d0\u793a</button><button class="ghost" id="btn-skip" type="button">\u8df3\u904e</button><button class="ghost" id="btn-mark" type="button">${state.bookmarks.includes(drill.han) ? "\u5df2\u6536\u85cf" : "\u6536\u85cf"}</button></div></section><section class="panel"><p class="lede">\u96fb\u8166\u7248\u53ef\u76f4\u63a5\u7528\u9375\u76e4\u3002Esc \u7747\u7b54\u6848\u3002</p>${kbHtml(hintKeys)}</section></div>`;
+  }
+  function htmlType() {
+    const hits = I.bySc.get(typed.toLowerCase()) || [];
+    return `<div class="split"><section class="panel"><div class="kicker">\u6253\u5b57</div><h1>\u8f38\u5165\u901f\u6210\u78bc</h1><input id="type-in" type="text" maxlength="4" autocomplete="off" placeholder="\u4f8b\u5982 eu = \u6e2f" value="${esc(typed)}"><div class="cands">${hits.slice(0, 12).map((h) => `<span class="cand">${h}</span>`).join("") || "<span class='lede'>\u672a\u6709\u5c0d\u61c9\u5b57</span>"}</div></section><section class="panel">${kbHtml(typed)}</section></div>`;
+  }
+  function htmlArticle() {
+    const art = ARTICLES[state.articleId] || ARTICLES.hi;
+    if (state._ai == null) {
+      const i = [...art.text].findIndex((c) => I.byHan.has(c));
+      state._ai = i < 0 ? 0 : i; state._amiss = 0;
+    }
+    const cur = art.text[state._ai] || "";
+    const row = info(cur);
+    const html = [...art.text].map((ch, i) => `<span class="${i < state._ai ? "done" : i === state._ai ? "cur" : "todo"}">${esc(ch)}</span>`).join("");
+    return `<div class="split"><section class="panel"><div class="chips">${Object.keys(ARTICLES).map((id) => `<button class="chip${state.articleId===id?" on":""}" data-art="${id}">${esc(ARTICLES[id].title)}</button>`).join("")}</div><div class="passage">${html}</div><form id="art-form"><input id="art-in" type="text" maxlength="4" autocomplete="off" placeholder="${row ? "\u6253 " + cur + " \u5605\u901f\u6210\u78bc" : "\u6a19\u9ede\u53ef\u8df3\u904e"}"></form></section><section class="panel"><p class="lede">${row ? cur + " \u2192 " + (state._amiss >= 2 ? row.sc.toUpperCase() + " " + labelCode(row.sc) : "\u932f\u5169\u6b21\u5148\u51fa\u63d0\u793a") : "\u6a19\u9ede\uff0f\u672a\u6536\u9304\u5b57\u53ef\u8df3\u904e"}</p>${kbHtml(state._amiss >= 1 && row ? (state._amiss >= 2 ? row.sc : row.sc[0]) : "")}<div class="row" style="margin-top:12px"><button class="ghost" id="btn-skip-art" type="button">\u8df3\u904e\u5462\u96bb</button></div></section></div>`;
+  }
+  function htmlReview() {
+    const rowOf = (h) => { const r = info(h); return `<div class="item"><b>${h}</b><span>${r ? r.sc.toUpperCase() + " \u00b7 " + labelCode(r.sc) : ""}</span></div>`; };
+    return `<section class="panel"><div class="kicker">\u8907\u7fd2</div><h1>\u932f\u5b57\u672c</h1>${state.wrongBook.length ? `<div class="list">${state.wrongBook.map(rowOf).join("")}</div><div class="row" style="margin-top:14px"><button class="btn" data-pool="wrong" data-view="drill">\u958b\u59cb\u8907\u7fd2</button></div>` : "<p class='lede'>\u672a\u6709\u932f\u5b57\u3002</p>"}<h1 style="margin-top:24px">\u6536\u85cf</h1>${state.bookmarks.length ? `<div class="list">${state.bookmarks.map(rowOf).join("")}</div>` : "<p class='lede'>\u672a\u6709\u6536\u85cf\u3002</p>"}</section>`;
+  }
+  function htmlLookup() {
+    const q = (state._q || "").trim();
+    let body = "";
+    if (q) {
+      if (I.byHan.has(q[0])) { const r = info(q[0]); body = `<div class="char">${q[0]}</div><p class="answer">${r.sc.toUpperCase()}</p><p class="lede">\u901f\u6210 ${labelCode(r.sc)}<br>\u5009\u9821 ${r.cj.toUpperCase()}</p>`; }
+      else { const hits = I.bySc.get(q.toLowerCase()) || []; body = hits.length ? `<div class="cands">${hits.map((h) => `<span class="cand">${h}</span>`).join("")}</div>` : "<p class='lede'>\u641e\u5514\u5230\u3002</p>"; }
+    }
+    return `<section class="panel"><div class="kicker">\u67e5\u78bc</div><h1>\u6f22\u5b57 \u2194 \u901f\u6210</h1><input id="look-in" type="text" placeholder="\u8f38\u5165\u300c\u8aaa\u300d\u6216 yu" value="${esc(q)}">${body}<p class="lede">\u300c\u8aaa\u300d\u6b63\u78ba\u901f\u6210\u4fc2 YU\uff08\u535c\u5c71\uff09\u3002</p></section>`;
+  }
+  function htmlMe() {
+    return `<section class="panel"><div class="kicker">\u6211</div><h1>\u9032\u5ea6</h1><div class="stats"><div class="stat"><b>${state.streak || 0}</b><span>\u9023\u7e8c\u65e5</span></div><div class="stat"><b>${state.correct || 0}</b><span>\u62c6\u5572</span></div><div class="stat"><b>${acc()}%</b><span>\u6e96\u78ba\u7387</span></div></div><p class="lede">\u932f\u5b57\u672c ${state.wrongBook.length} \u00b7 \u6536\u85cf ${state.bookmarks.length} \u00b7 \u4eca\u65e5 ${state.todayCount}/20</p><div class="row"><button class="ghost" data-view="review">\u7747\u932f\u5b57\u672c</button><button class="ghost" data-view="lookup">\u67e5\u78bc</button><button class="ghost" id="btn-reset" type="button">\u6e05\u9032\u5ea6</button></div></section>`;
+  }
+  function render() {
+    if (state.view !== "drill" && timer && !(drill && drill.timed)) { clearInterval(timer); timer = null; }
+    syncChrome();
+    const fn = { home: htmlHome, learn: htmlLearn, roots: htmlRoots, rootquiz: htmlQuiz, drill: htmlDrill, timed: htmlDrill, type: htmlType, article: htmlArticle, review: htmlReview, lookup: htmlLookup, me: htmlMe }[state.view] || htmlHome;
+    $("main").innerHTML = fn();
+    bind();
+  }
+  function checkDrill() {
+    if (!drill) return;
+    const row = info(drill.han);
+    const val = (($("drill-in") && $("drill-in").value) || typed || "").trim().toLowerCase();
+    typed = val;
+    if (val === row.sc) { markRight(drill.han); if (drill.timed) drill.got += 1; toast("\u5572"); startDrill(drill.pool, drill.timed); setTimeout(render, 240); }
+    else { drill.misses += 1; drill.hint = Math.min(2, drill.misses); markWrong(drill.han); render(); }
+  }
+  function advanceArt() {
+    const art = ARTICLES[state.articleId] || ARTICLES.hi;
+    let i = (state._ai || 0) + 1;
+    while (i < art.text.length && !I.byHan.has(art.text[i])) i += 1;
+    state._ai = i; state._amiss = 0; typed = "";
+    if (i >= art.text.length) { finishLesson(state.articleId === "hk" ? "article-hk" : "article-hi"); toast("\u6253\u5b8c\u4e00\u7bc7"); go("home"); }
+  }
+  function checkArt() {
+    const art = ARTICLES[state.articleId] || ARTICLES.hi;
+    const ch = art.text[state._ai];
+    if (!I.byHan.has(ch)) { advanceArt(); render(); return; }
+    const val = (($("art-in") && $("art-in").value) || "").trim().toLowerCase();
+    if (val === info(ch).sc) { markRight(ch); advanceArt(); render(); }
+    else { state._amiss = (state._amiss || 0) + 1; markWrong(ch); render(); }
+  }
+  function openLesson(id) {
+    const l = LESSONS.find((x) => x.id === id);
+    if (!l) return go("learn");
+    if (l.kind === "roots") return go("roots");
+    if (l.kind === "rootquiz") { quiz = null; startQuiz(); return go("rootquiz"); }
+    if (l.kind === "article") { state.articleId = l.article; state._ai = null; return go("article"); }
+    state.pool = l.pool || "starter"; startDrill(state.pool, l.kind === "timed"); go("drill");
+  }
+  function bind() {
+    document.querySelectorAll("[data-view]").forEach((b) => b.onclick = () => {
+      if (b.dataset.pool) state.pool = b.dataset.pool;
+      if (b.dataset.view === "drill") startDrill(state.pool || "starter", false);
+      if (b.dataset.view === "article") state._ai = null;
+      go(b.dataset.view);
+    });
+    document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => openLesson(b.dataset.go));
+    document.querySelectorAll("[data-pool]").forEach((b) => { if (b.dataset.view) return; b.onclick = () => { state.pool = b.dataset.pool; startDrill(state.pool, !!(drill && drill.timed)); render(); }; });
+    document.querySelectorAll("[data-art]").forEach((b) => b.onclick = () => { state.articleId = b.dataset.art; state._ai = null; render(); });
+    document.querySelectorAll("[data-quiz]").forEach((b) => b.onclick = () => {
+      if (b.dataset.quiz === quiz.ans) { quiz.streak += 1; quiz.n += 1; if (quiz.n >= 20) finishLesson("rootquiz"); startQuiz(); render(); }
+      else { quiz.streak = 0; toast("\u5514\u5572\uff0c\u6b63\u78ba\u4fc2 " + quiz.ans); }
+    });
+    document.querySelectorAll("[data-k]").forEach((b) => b.onclick = () => {
+      typed = (typed + b.dataset.k).slice(-4);
+      const box = $("drill-in") || $("type-in") || $("art-in");
+      if (box) box.value = typed;
+      if (state.view === "type") render();
+    });
+    if ($("drill-in")) { $("drill-in").focus(); $("drill-in").oninput = () => { typed = $("drill-in").value.toLowerCase(); }; $("drill-form").onsubmit = (e) => { e.preventDefault(); checkDrill(); }; }
+    if ($("btn-check")) $("btn-check").onclick = checkDrill;
+    if ($("btn-hint")) $("btn-hint").onclick = () => { if (drill) { drill.hint = Math.min(2, (drill.hint || 0) + 1); render(); } };
+    if ($("btn-skip")) $("btn-skip").onclick = () => { startDrill(drill.pool, drill.timed); render(); };
+    if ($("btn-mark")) $("btn-mark").onclick = () => { toggleMark(drill.han); render(); };
+    if ($("type-in")) { $("type-in").focus(); $("type-in").oninput = () => { typed = $("type-in").value.toLowerCase(); render(); $("type-in").focus(); $("type-in").value = typed; }; }
+    if ($("look-in")) { $("look-in").focus(); $("look-in").oninput = () => { state._q = $("look-in").value; render(); const n = $("look-in"); if (n) { n.focus(); n.value = state._q; } }; }
+    if ($("art-in")) { $("art-in").focus(); $("art-form").onsubmit = (e) => { e.preventDefault(); checkArt(); }; }
+    if ($("btn-skip-art")) $("btn-skip-art").onclick = () => { advanceArt(); render(); };
+    if ($("btn-reset")) $("btn-reset").onclick = () => { if (confirm("\u6e05\u6652\u672c\u5730\u9032\u5ea6\uff1f")) { state = blank(); save(); render(); } };
+  }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && drill && state.view === "drill") { drill.hint = 2; render(); } });
+  window.addEventListener("resize", () => syncChrome());
+  if (!window.SUCHENG || !SUCHENG.chars) { $("main").innerHTML = "<p class='boot-err'>\u5b57\u5eab\u8f09\u5165\u5931\u6557</p>"; return; }
   render();
-});
+})();
