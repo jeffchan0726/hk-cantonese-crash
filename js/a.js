@@ -4,7 +4,6 @@
     { id: "home", icon: "🏠", label: "今日" },
     { id: "learn", icon: "📘", label: "課程" },
     { id: "drill", icon: "✳️", label: "拆碼" },
-    { id: "type", icon: "⌨️", label: "打字" },
     { id: "article", icon: "📝", label: "文章" },
     { id: "me", icon: "👤", label: "我" }
   ];
@@ -32,6 +31,7 @@
   const blank = function(){ return { view:"home", pool:"starter", articleId:"guan", knownRad:{}, correct:0, wrong:0, streak:0, lastDay:"", todayCount:0, todayDate:"", wrongBook:[], bookmarks:[], lessonsDone:{}, customArt:"" }; };
   function load(){ try { return JSON.parse(localStorage.getItem(STORE) || "{}"); } catch(e){ return {}; } }
   var state = Object.assign(blank(), load());
+  if(state.view==="type") state.view="article";
   var drill=null, quiz=null, typed="", timer=null, remain=0, outText="", lastHan="", candPage=0, typeT0=0;
   function save(){ try { localStorage.setItem(STORE, JSON.stringify(state)); } catch(e){} }
   function $(id){ return document.getElementById(id); }
@@ -121,7 +121,7 @@
     var html=TABS.map(function(t){ return "<button type='button' data-view='"+t.id+"' class='"+(state.view===t.id||(t.id==="learn"&&(state.view==="roots"||state.view==="rootquiz"))?"on":"")+"'>"+t.icon+" "+t.label+"</button>"; }).join("");
     $("side-tabs").innerHTML=html; $("tabbar").innerHTML=html;
   }
-  function go(view){ state.view=view; save(); render(); }
+  function go(view){ if(view==="type") view="article"; state.view=view; save(); render(); }
   function startDrill(pool,timed){
     var han=pick(poolOf(pool));
     var keep=drill&&drill.timed&&timed;
