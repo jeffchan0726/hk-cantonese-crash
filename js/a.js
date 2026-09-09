@@ -18,14 +18,14 @@
     { id: "timed", title: "⑦ 六十秒", blurb: "一分鐘。", kind: "timed", pool: "starter" },
     { id: "article-guan", title: "⑧ 關你咩事", blurb: "高登經典潮文。", kind: "article", article: "guan" },
     { id: "article-bus", title: "⑨ 巴士阿叔", blurb: "你有壓力我有壓力。", kind: "article", article: "bus" },
-    { id: "common3k", title: "⑩ 三千常用", blurb: "倉頡三香港碼 3000 字。", kind: "drill", pool: "all" }
+    { id: "common3k", title: "⑩ 三千常用", blurb: "倉頣三香港碼 3000 字。", kind: "drill", pool: "all" }
   ];
   const ARTICLES = {
-    guan: { title: "關你咩事", text: "關你咩事呀。我喎香港食飯飲茶，關你哔班朋友咩事。你哔先睇清楚喇。" },
-    bus: { title: "巴士阿叔", text: "你有壓力，我有壓力。巴士上面唔好講嘢。阿叔話你哔坐低，睇清楚先。" },
-    rice: { title: "食哒未", text: "食哒飯未呀。未。未呀。梗係未啦。今晚去旺角食飯飲茶，搞掂未。" },
-    pro: { title: "專業揪食", text: "我哔係專業揪食嘅。搞掂哒先至散。多謝你哔幫手。唔該晒。" },
-    peanut: { title: "花生友", text: "有嘢睇就好。班花生友坐低先。你哔睇清楚，唔好成日講嘢。" },
+    guan: { title: "關你咩事", text: "關你咩事呀。我喎香港食飯飲茶，關你哑班朋友咩事。你哑先睇清楚喇。" },
+    bus: { title: "巴士阿叔", text: "你有壓力，我有壓力。巴士上面唔好講嘢。阿叔話你哑坐低，睇清楚先。" },
+    rice: { title: "食哒未", text: "食哒飯未呀。未。未呀。梓係未啦。今晚去旺角食飯飲茶，搞掂未。" },
+    pro: { title: "專業掬食", text: "我哑係專業掬食嘅。搞掂哒先至散。多謝你哑幫手。唔該晒。" },
+    peanut: { title: "花生友", text: "有嘢睇就好。班花生友坐低先。你哑睇清楚，唔好成日講嘢。" },
     alarm: { title: "報警潮文", text: "講真，我認真。你再放出嚕我會報警。警察上你屋企打個轉，你先想清楚。" }
   };
   const PARTS = {"行":"彳/丁","街":"彳/圭","明":"日/月","好":"女/子","他":"亻/也","你":"亻/尔","說":"言/兌","港":"氵/巷","間":"門/日","問":"門/口","昌":"日/日","暗":"日/音","有":"伏/月","冇":"伏/册"};
@@ -66,7 +66,7 @@
     if(!han||!info(han)) return "<p class='lede'>對住黃色嗰隻字打頭尾兩碼，Enter 核對。</p>";
     var row=info(han);
     var split=analyzeOf(han);
-    return "<div class='analyze'><div class='analyze-han'>"+han+"</div><div class='analyze-eq'><span class='red'>"+han+"</span> = "+split+"</div><div class='analyze-meta'>字首/字身 · 速成 "+rootsStr(row.sc)+" "+row.sc.toUpperCase()+" · 倉頡 "+rootsStr(row.cj)+" "+String(row.cj||"").toUpperCase()+"</div></div>";
+    return "<div class='analyze'><div class='analyze-han'>"+han+"</div><div class='analyze-eq'><span class='red'>"+han+"</span> = "+split+"</div><div class='analyze-meta'>字首/字身 · 速成 "+rootsStr(row.sc)+" "+row.sc.toUpperCase()+" · 倉頣 "+rootsStr(row.cj)+" "+String(row.cj||"").toUpperCase()+"</div></div>";
   }
   function artCur(){
     var art=ARTICLES[state.articleId]||ARTICLES.guan;
@@ -117,7 +117,14 @@
       timer=setInterval(function(){
         remain-=1;
         if(remain<=0){ clearInterval(timer); timer=null; toast((drill?drill.got:0)+" 字 · "+wpmOf(drill?drill.got:0, drill&&drill.t0)+" 字/分"); go("home"); }
-        else if(state.view==="drill") render();
+        else if(state.view==="drill"){
+          var b=$("speed-remain");
+          if(b){
+            b.textContent=(remain||0)+"s";
+            var g=$("speed-got"); if(g) g.textContent=(drill?drill.got:0)+" 字";
+            var w=$("speed-wpm"); if(w) w.textContent=wpmOf(drill?drill.got:0, drill&&drill.t0)+" 字/分";
+          }
+        }
       },1000);
     }
   }
