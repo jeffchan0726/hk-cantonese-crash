@@ -17,13 +17,19 @@
       ["哋","佢","嚙","咇","喇","真","花","專","業","揵","報","壓","力","阿","叔","梗","班","膠","散","打"]
     );
   }
+  function bootApp() {
+    extras();
+    var a = document.createElement("script");
+    a.src = "js/app.js?v=12";
+    document.body.appendChild(a);
+  }
   if (!window.SUCHENG || !SUCHENG.chars || SUCHENG.chars.length < 100) {
     var s = document.createElement("script");
     s.src = "https://cdn.jsdelivr.net/gh/jeffchan0726/hk-cantonese-crash@2c4a94f56b2d5e77dca32b2f715382d9490b25fa/js/data.js";
-    s.onload = extras;
-    s.onerror = extras;
+    s.onload = bootApp;
+    s.onerror = bootApp;
     document.head.appendChild(s);
   } else {
-    extras();
+    bootApp();
   }
 })();
