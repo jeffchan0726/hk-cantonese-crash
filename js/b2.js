@@ -10,7 +10,7 @@
     var row=info(drill.han);
     var val=(( $("drill-in") && $("drill-in").value )||typed||"").trim().toLowerCase();
     typed=val;
-    if(val===row.sc){ markRight(drill.han); if(drill.timed) drill.got+=1; toast("啲"); startDrill(drill.pool, drill.timed); setTimeout(render,200); }
+    if(val===row.sc){ markRight(drill.han); if(drill.timed) drill.got+=1; toast("啱"); startDrill(drill.pool, drill.timed); setTimeout(render,200); }
     else { drill.misses+=1; drill.hint=Math.min(2,drill.misses); markWrong(drill.han); render(); }
   }
   function openLesson(id){
@@ -26,7 +26,7 @@
     document.querySelectorAll("[data-go]").forEach(function(b){ b.onclick=function(){ openLesson(b.getAttribute("data-go")); }; });
     document.querySelectorAll("[data-pool]").forEach(function(b){ if(b.getAttribute("data-view")) return; b.onclick=function(){ state.pool=b.getAttribute("data-pool"); startDrill(state.pool, !!(drill&&drill.timed)); render(); }; });
     document.querySelectorAll("[data-art]").forEach(function(b){ b.onclick=function(){ state.articleId=b.getAttribute("data-art"); state._ai=null; render(); }; });
-    document.querySelectorAll("[data-quiz]").forEach(function(b){ b.onclick=function(){ if(b.getAttribute("data-quiz")===quiz.ans){ quiz.streak+=1; startQuiz(); render(); } else { quiz.streak=0; toast("唔啲 "+quiz.ans); } }; });
+    document.querySelectorAll("[data-quiz]").forEach(function(b){ b.onclick=function(){ if(b.getAttribute("data-quiz")===quiz.ans){ quiz.streak+=1; startQuiz(); render(); } else { quiz.streak=0; toast("唔啱 "+quiz.ans); } }; });
     document.querySelectorAll("[data-k]").forEach(function(b){ b.onclick=function(){ typed=(typed+b.getAttribute("data-k")).slice(-2); var box=$("drill-in")||$("type-in")||$("art-in"); if(box) box.value=typed; if(state.view==="type"||state.view==="article") render(); }; });
     document.querySelectorAll("[data-pick]").forEach(function(b){ b.onclick=function(){ var han=b.getAttribute("data-pick"); var n=pageCands().page.indexOf(han)+1; if(n) pickNum(n); else commitHan(han); }; });
     if($("drill-in")){ $("drill-in").focus(); $("drill-form").onsubmit=function(e){ e.preventDefault(); checkDrill(); }; }
@@ -39,7 +39,7 @@
       $("type-in").oninput=function(){ typed=$("type-in").value.toLowerCase().replace(/[^a-y]/g,"").slice(0,2); candPage=0; render(); if($("type-in")){ $("type-in").focus(); $("type-in").value=typed; } };
       $("type-in").onkeydown=function(e){
         if(e.key===" "){ e.preventDefault(); pickNum(1); }
-        else if(e.key==="1"||e.key==="2"||e.key==="3"||e.key==="4"){ e.preventDefault(); pickNum(+e.key); }
+        else if("123456789".indexOf(e.key)>=0){ e.preventDefault(); pickNum(+e.key); }
         else if(e.key==="="){ e.preventDefault(); var p=pageCands(); candPage=(candPage+1)%p.pages; render(); }
       };
     }
@@ -50,7 +50,7 @@
       $("art-in").oninput=function(){ typed=$("art-in").value.toLowerCase().replace(/[^a-y]/g,"").slice(0,2); candPage=0; render(); if($("art-in")){ $("art-in").focus(); $("art-in").value=typed; } };
       $("art-in").onkeydown=function(e){
         if(e.key===" "){ e.preventDefault(); pickNum(1); }
-        else if(e.key==="1"||e.key==="2"||e.key==="3"||e.key==="4"){ e.preventDefault(); pickNum(+e.key); }
+        else if("123456789".indexOf(e.key)>=0){ e.preventDefault(); pickNum(+e.key); }
         else if(e.key==="="){ e.preventDefault(); var p=pageCands(); candPage=(candPage+1)%p.pages; render(); }
       };
     }
