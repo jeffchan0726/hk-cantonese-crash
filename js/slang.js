@@ -20,7 +20,7 @@
   function bootApp() {
     extras();
     var a = document.createElement("script");
-    a.src = "js/app.js?v=16";
+    a.src = "js/app.js?v=17";
     document.body.appendChild(a);
   }
   if (!window.SUCHENG || !SUCHENG.chars || SUCHENG.chars.length < 100) {
