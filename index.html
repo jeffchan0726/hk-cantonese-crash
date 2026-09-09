@@ -7,8 +7,8 @@
   <title>速成練習 · 香港速成輸入法</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg">
-  <link rel="stylesheet" href="css/app.css?v=24">
-  <link rel="stylesheet" href="css/wuse.css?v=24">
+  <link rel="stylesheet" href="css/app.css?v=25">
+  <link rel="stylesheet" href="css/wuse.css?v=25">
 </head>
 <body>
   <aside class="sidenav" id="sidenav">
@@ -20,7 +20,7 @@
       </div>
     </div>
     <nav class="side-tabs" id="side-tabs"></nav>
-    <p class="side-hint">大字分色拆碼；錯一次提頭碼，錯兩次頭尾，第三次全圖。</p>
+    <p class="side-hint">大字分色拆碼；錯一次提頭碼，錯兩次頭尾，第三次全圖。提示會顯示輔助字形。</p>
   </aside>
   <div class="stage">
     <header class="topbar">
@@ -29,7 +29,7 @@
         <span class="goal-pill" id="goal-pill">今日 0/20</span>
       </div>
     </header>
-    <main id="main" class="main">載入中…</main>
+    <main id="main" class="main">載入字庫中…</main>
   </div>
   <nav class="tabbar" id="tabbar"></nav>
   <div id="toast" class="toast" hidden></div>
@@ -39,18 +39,18 @@
       if (el) el.innerHTML = "<pre class='boot-err'>" + String(m) + "</pre>";
     };
   </script>
-  <script src="js/data.js?v=24"></script>
-  <script src="js/s0.js?v=24"></script>
-  <script src="js/s1.js?v=24"></script>
-  <script src="js/s2.js?v=24"></script>
-  <script src="js/s3.js?v=24"></script>
-  <script src="js/s4.js?v=24"></script>
-  <script src="js/s5.js?v=24"></script>
-  <script src="js/pools.js?v=24"></script>
-  <script src="js/slang.js?v=24"></script>
+  <script src="js/data.js?v=25"></script>
+  <script src="js/s0.js?v=25"></script>
+  <script src="js/s1.js?v=25"></script>
+  <script src="js/s2.js?v=25"></script>
+  <script src="js/s3.js?v=25"></script>
+  <script src="js/s4.js?v=25"></script>
+  <script src="js/s5.js?v=25"></script>
+  <script src="js/pools.js?v=25"></script>
+  <script src="js/slang.js?v=25"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js?v=24").catch(function () {});
+      navigator.serviceWorker.register("./sw.js?v=25").catch(function () {});
     }
   </script>
 </body>
