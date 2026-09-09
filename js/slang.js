@@ -10,11 +10,11 @@
   function bootApp() {
     extras();
     var a = document.createElement("script");
-    a.src = "js/app.js?v=23";
+    a.src = "js/app.js?v=24";
     document.body.appendChild(a);
   }
   function wait() {
-    if (window.__BANK_READY) { bootApp(); return; }
+    if (window.__BANK_READY || (window.SUCHENG && SUCHENG.chars && SUCHENG.chars.length)) { bootApp(); return; }
     setTimeout(wait, 40);
   }
   wait();
