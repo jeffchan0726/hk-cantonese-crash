@@ -1,10 +1,10 @@
 (function(){
-  fetch("js/app.src.js?v=13").then(function(r){
-    if(!r.ok) throw new Error("app.src "+r.status);
-    return r.text();
-  }).then(function(src){
+  Promise.all([
+    fetch("js/a.js?v=13").then(function(r){ if(!r.ok) throw new Error("a.js "+r.status); return r.text(); }),
+    fetch("js/b.js?v=13").then(function(r){ if(!r.ok) throw new Error("b.js "+r.status); return r.text(); })
+  ]).then(function(parts){
     var el=document.createElement("script");
-    el.text=src;
+    el.text=parts[0]+parts[1];
     document.body.appendChild(el);
   }).catch(function(e){
     var m=document.getElementById("main");
