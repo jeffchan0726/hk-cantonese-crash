@@ -9,7 +9,7 @@
   <title>速成練習 · 香港速成輸入法</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg">
-  <link rel="stylesheet" href="css/app.css?v=8">
+  <link rel="stylesheet" href="css/app.css?v=9">
 </head>
 <body>
   <aside class="sidenav" id="sidenav">
@@ -21,7 +21,7 @@
       </div>
     </div>
     <nav class="side-tabs" id="side-tabs"></nav>
-    <p class="side-hint">電腦版用實體鍵盤打頭尾碼，Enter 核對，Esc 睇答案。</p>
+    <p class="side-hint">打頭尾碼之後用 1 2 3 4 擇字，空白鍵擇1。</p>
   </aside>
   <div class="stage">
     <header class="topbar">
@@ -40,11 +40,11 @@
       if (el) el.innerHTML = "<pre class='boot-err'>" + String(m) + "</pre>";
     };
   </script>
-  <script src="js/data.js?v=8"></script>
-  <script src="js/app.js?v=8"></script>
+  <script src="js/data.js?v=9"></script>
+  <script src="js/app.js?v=9"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js?v=8").catch(function () {});
+      navigator.serviceWorker.register("./sw.js?v=9").catch(function () {});
     }
   </script>
 </body>
