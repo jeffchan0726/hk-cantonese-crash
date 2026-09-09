@@ -24,9 +24,12 @@
     a.src = "js/app.js?v=25";
     document.body.appendChild(a);
   }
+  var n = 0;
   function wait() {
-    if (window.SUCHENG && SUCHENG.chars && SUCHENG.chars.length >= 100) { bootApp(); return; }
-    setTimeout(wait, 40);
+    if (window.__BANK_READY) { bootApp(); return; }
+    n += 1;
+    if (n > 80 && window.SUCHENG && SUCHENG.chars && SUCHENG.chars.length) { bootApp(); return; }
+    setTimeout(wait, 50);
   }
   wait();
 })();
