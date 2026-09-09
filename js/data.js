@@ -1,8 +1,8 @@
-window.SUCHENG = {
+window.SUCHENG = Object.assign(window.SUCHENG || {}, {
   map: {A:"日",B:"月",C:"金",D:"木",E:"水",F:"火",G:"土",H:"竹",I:"戈",J:"十",K:"大",L:"中",M:"一",N:"弓",O:"人",P:"心",Q:"手",R:"口",S:"尸",T:"廿",U:"山",V:"女",W:"田",Y:"卜",X:"難"},
   aux: {
     A:"日 曰",
-    B:"月 册 目 肉 冂 冐",
+    B:"月 册 目 肉 冂 冘",
     C:"金 八 丷",
     D:"木 寸",
     E:"水 氵 氺 又",
@@ -19,8 +19,8 @@ window.SUCHENG = {
     P:"心 忄 ⺗",
     Q:"手 扌",
     R:"口",
-    S:"尸 匸 匚",
-    T:"廿 艸 廾",
+    S:"尸 匸 区",
+    T:"廿 艸 幵",
     U:"山 屮",
     V:"女",
     W:"田",
@@ -54,9 +54,9 @@ window.SUCHENG = {
     Y:"卜卦／走之底",
     X:"難字鍵"
   },
-  chars: [],
+  chars: (window.SUCHENG && SUCHENG.chars && SUCHENG.chars.length) ? SUCHENG.chars : [],
   starter: [],
   hard: [],
   cantonese: [],
   singles: ["日","月","金","木","水","火","土","竹","戈","十","大","中","一","弓","人","心","手","口","尸","廿","山","女","田","卜"]
-};
+});
