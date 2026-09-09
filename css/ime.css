@@ -2,13 +2,13 @@
 .ime-comp { min-height: 32px; font-size: 22px; letter-spacing: .08em; color: #d7dde6; padding: 4px 2px 8px; border-bottom: 0 !important; }
 .ime-comp .raw { color: var(--muted); font-size: 13px; letter-spacing: .18em; margin-left: 8px; }
 .ime-comp .comp-han { font-size: 26px; color: #e8edf3; }
-.ime-win { display: flex; background: #2a2a2a; border-radius: 10px; min-width: 156px; box-shadow: 0 10px 28px rgba(0,0,0,.45); overflow: hidden; }
-.ime-cands { display: flex !important; flex-direction: column; flex-wrap: nowrap !important; gap: 0 !important; flex: 1; min-width: 132px; }
+.ime-win { display: flex; background: #2a2a2a; border-radius: 10px; min-width: 148px; box-shadow: 0 10px 28px rgba(0,0,0,.45); overflow: hidden; }
+.ime-cands { display: flex !important; flex-direction: column; flex-wrap: nowrap !important; gap: 0 !important; flex: 1; min-width: 124px; }
 .ime-item { display: flex; align-items: center; gap: 10px; border: 0 !important; background: transparent !important; border-radius: 0 !important; padding: 5px 12px !important; color: #eee; min-width: 0 !important; min-height: 34px !important; justify-content: flex-start !important; width: 100%; text-align: left; cursor: pointer; }
 .ime-item b { color: #bdbdbd; font-size: 14px; font-weight: 500; width: 16px; }
 .ime-item .ch { font-size: 20px; font-family: "Noto Serif TC","Songti TC","PMingLiU",serif; }
 .ime-item.on { background: #3a3a3a !important; }
-.ime-item.empty { opacity: .28; pointer-events: none; }
+.ime-item.empty { display: none !important; }
 .ime-dots { width: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 8px 0; background: #242424; }
 .ime-dots i { width: 5px; height: 5px; border-radius: 50%; background: #5a5a5a; display: block; }
 .ime-dots i.on { background: #d0d0d0; }
