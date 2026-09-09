@@ -5,7 +5,7 @@
   }
   function htmlHome(){
     var next=LESSONS.find(function(l){ return !state.lessonsDone[l.id]; })||LESSONS[0];
-    return "<div class='home-grid'><section class='hero'><div class='kicker'>SUCHENG</div><h1>只打頭尾兩碼</h1><p class='lede'>「港」EU 水山。「說」YU 卜山。「行」HN 彳/丁。</p><div class='stats'><div class='stat'><b>"+(state.streak||0)+"</b><span>連續日</span></div><div class='stat'><b>"+(state.correct||0)+"</b><span>拆啲</span></div><div class='stat'><b>"+acc()+"%</b><span>準確率</span></div></div></section><section class='path'><article class='path-card'><div><h3>繼續："+next.title+"</h3><p>"+next.blurb+"</p></div><button class='go' data-go='"+next.id+"'>去</button></article><article class='path-card'><div><h3>課程</h3><p>字根→粵語→文章</p></div><button class='go' data-view='learn'>去</button></article><article class='path-card'><div><h3>拆碼</h3><p>常用/難字</p></div><button class='go' data-view='drill'>去</button></article><article class='path-card'><div><h3>打字選字</h3><p>1 2 3 4 擇字</p></div><button class='go' data-view='type'>去</button></article><article class='path-card'><div><h3>查碼</h3><p>漢字↔速成</p></div><button class='go' data-view='lookup'>去</button></article></section></div>";
+    return "<div class='home-grid'><section class='hero'><div class='kicker'>SUCHENG</div><h1>只打頭尾兩碼</h1><p class='lede'>「港」EU 水山。「說」YU 卜山。「行」HN 彳/丁。</p><div class='stats'><div class='stat'><b>"+(state.streak||0)+"</b><span>連續日</span></div><div class='stat'><b>"+(state.correct||0)+"</b><span>拆啲</span></div><div class='stat'><b>"+acc()+"%</b><span>準確率</span></div></div></section><section class='path'><article class='path-card'><div><h3>繼續："+next.title+"</h3><p>"+next.blurb+"</p></div><button class='go' data-go='"+next.id+"'>去</button></article><article class='path-card'><div><h3>課程</h3><p>字根→粵語→文章</p></div><button class='go' data-view='learn'>去</button></article><article class='path-card'><div><h3>拆碼</h3><p>常用/難字</p></div><button class='go' data-view='drill'>去</button></article><article class='path-card'><div><h3>打字選字</h3><p>1–9 擇字</p></div><button class='go' data-view='type'>去</button></article><article class='path-card'><div><h3>查碼</h3><p>漢字↔速成</p></div><button class='go' data-view='lookup'>去</button></article></section></div>";
   }
   function htmlLearn(){ return "<section class='panel'><h1>課程</h1><div class='path'>"+LESSONS.map(function(l){ return "<article class='path-card'><div><h3>"+l.title+"</h3><p>"+l.blurb+"</p></div><button class='go' data-go='"+l.id+"'>去</button></article>"; }).join("")+"</div></section>"; }
   function htmlRoots(){ return "<section class='panel'><h1>廿四字根</h1><div class='root-grid'>"+"ABCDEFGHIJKLMNOPQRSTUVWY".split("").map(function(k){ return "<div class='root'><b>"+SUCHENG.map[k]+"</b><span>"+k+"</span></div>"; }).join("")+"</div><div class='row' style='margin-top:16px'><button class='btn' data-go='rootquiz'>測驗</button></div></section>"; }
@@ -23,17 +23,21 @@
   function imeSlots(){
     var pack=pageCands();
     var slots="";
-    for(var i=0;i<4;i++){
+    for(var i=0;i<9;i++){
       var h=pack.page[i];
-      if(h) slots+="<button class='ime-item' type='button' data-pick='"+h+"'><b>"+(i+1)+"</b><span class='ch'>"+h+"</span></button>";
-      else slots+="<div class='ime-item empty'><b>"+(i+1)+"</b><span class='ch'>&nbsp;</span></div>";
+      var on=i===0&&h?" on":"";
+      if(h) slots+="<button class='ime-item"+on+"' type='button' data-pick='"+h+"'><b>"+(i+1)+"</b><span class='ch'>"+h+"</span></button>";
+      else slots+="<div class='ime-item empty'><b>"+(i+1)+"</b><span class='ch'></span></div>";
     }
+    var dots="";
+    for(var p=0;p<pack.pages;p++) dots+="<i class='"+(p===candPage?"on":"")+"'></i>";
     var glyphs=rootsStr(typed);
-    return "<div class='ime'><div class='ime-comp'><span class='comp-han'>"+(glyphs||"△")+"</span><span class='raw'>"+(typed.toUpperCase()||"—")+"</span></div><div class='ime-cands'>"+slots+"</div><p class='ime-hint'>打完碼之後用 1 2 3 4 擇字 · 空白擇 1 · = 翻頁 · 第 "+(candPage+1)+"/"+pack.pages+" 頁</p></div>";
+    var win=pack.all.length?("<div class='ime-win'><div class='ime-col'><div class='ime-cands'>"+slots+"</div></div><div class='ime-dots'>"+dots+"</div></div>"):"";
+    return "<div class='ime'><div class='ime-comp'><span class='comp-han'>"+(glyphs||"")+"</span><span class='raw'>"+(typed.toUpperCase()||"")+"</span></div>"+win+"</div>";
   }
   function htmlType(){
     var out=(outText||"").split("").map(function(ch){ return ch===lastHan?"<span class='red'>"+ch+"</span>":ch; }).join("");
-    return "<div class='split'><section class='panel'><div class='kicker'>打字 · 速成 IME</div><h1>打完 aa 就出 1 2 3 4</h1><div class='outbox'>"+(out||"<span class='lede'>尚未打字</span>")+"</div>"+imeSlots()+"<form id='type-form'><input id='type-in' type='text' maxlength='2' autocomplete='off' placeholder='aa / hn / yu' value='"+typed+"'></form></section>"+analysisBox(lastHan)+kbHtml(typed)+"</div>";
+    return "<div class='split'><section class='panel'><div class='kicker'>打字 · 速成 IME</div><h1>打完碼用 1–9 擇字</h1><div class='outbox'>"+(out||"<span class='lede'>尚未打字</span>")+"</div>"+imeSlots()+"<form id='type-form'><input id='type-in' type='text' maxlength='2' autocomplete='off' placeholder='aa / hn / yu' value='"+typed+"'></form></section>"+analysisBox(lastHan)+kbHtml(typed)+"</div>";
   }
   function htmlArticle(){
     var art=ARTICLES[state.articleId]||ARTICLES.guan;
