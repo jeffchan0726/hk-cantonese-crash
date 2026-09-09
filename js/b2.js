@@ -21,6 +21,17 @@
     if(l.kind==="article"){ state.articleId=l.article; state._ai=null; return go("article"); }
     state.pool=l.pool||"starter"; startDrill(state.pool, l.kind==="timed"); go("drill");
   }
+  function bindImeKeys(el){
+    if(!el) return;
+    el.onkeydown=function(e){
+      if(e.key===" "){ e.preventDefault(); pickNum(1); }
+      else if(e.key==="Enter"){ e.preventDefault(); pickNum(1); }
+      else if("123456789".indexOf(e.key)>=0){ e.preventDefault(); pickNum(+e.key); }
+      else if(e.key==="=" || e.key==="PageDown"){ e.preventDefault(); var p=pageCands(); candPage=(candPage+1)%p.pages; render(); }
+      else if(e.key==="Backspace"){ e.preventDefault(); typed=String(typed||"").slice(0,-1); candPage=0; render(); }
+      else if(e.key==="Escape"){ e.preventDefault(); typed=""; candPage=0; render(); }
+    };
+  }
   function bind(){
     document.querySelectorAll("[data-view]").forEach(function(b){ b.onclick=function(){ if(b.getAttribute("data-pool")) state.pool=b.getAttribute("data-pool"); if(b.getAttribute("data-view")==="drill") startDrill(state.pool||"starter", false); if(b.getAttribute("data-view")==="article") state._ai=null; go(b.getAttribute("data-view")); }; });
     document.querySelectorAll("[data-go]").forEach(function(b){ b.onclick=function(){ openLesson(b.getAttribute("data-go")); }; });
@@ -37,22 +48,14 @@
     if($("type-in")){
       $("type-in").focus();
       $("type-in").oninput=function(){ typed=$("type-in").value.toLowerCase().replace(/[^a-y]/g,"").slice(0,2); candPage=0; render(); if($("type-in")){ $("type-in").focus(); $("type-in").value=typed; } };
-      $("type-in").onkeydown=function(e){
-        if(e.key===" "){ e.preventDefault(); pickNum(1); }
-        else if("123456789".indexOf(e.key)>=0){ e.preventDefault(); pickNum(+e.key); }
-        else if(e.key==="="){ e.preventDefault(); var p=pageCands(); candPage=(candPage+1)%p.pages; render(); }
-      };
+      bindImeKeys($("type-in"));
     }
     if($("look-in")){ $("look-in").focus(); $("look-in").oninput=function(){ state._q=$("look-in").value; render(); if($("look-in")){ $("look-in").focus(); $("look-in").value=state._q; } }; }
     if($("art-form")) $("art-form").onsubmit=function(e){ e.preventDefault(); pickNum(1); };
     if($("art-in")){
       $("art-in").focus();
       $("art-in").oninput=function(){ typed=$("art-in").value.toLowerCase().replace(/[^a-y]/g,"").slice(0,2); candPage=0; render(); if($("art-in")){ $("art-in").focus(); $("art-in").value=typed; } };
-      $("art-in").onkeydown=function(e){
-        if(e.key===" "){ e.preventDefault(); pickNum(1); }
-        else if("123456789".indexOf(e.key)>=0){ e.preventDefault(); pickNum(+e.key); }
-        else if(e.key==="="){ e.preventDefault(); var p=pageCands(); candPage=(candPage+1)%p.pages; render(); }
-      };
+      bindImeKeys($("art-in"));
     }
     if($("btn-skip-art")) $("btn-skip-art").onclick=function(){ var art=ARTICLES[state.articleId]||ARTICLES.guan; state._ai=(state._ai||0)+1; render(); };
     if($("btn-reset")) $("btn-reset").onclick=function(){ if(confirm("清進度?")){ state=blank(); save(); render(); } };
