@@ -1,14 +1,16 @@
   function ensureWuse(){
     if(document.getElementById("wuse-css")) return;
     var l=document.createElement("link");
-    l.id="wuse-css"; l.rel="stylesheet"; l.href="css/wuse.css?v=16";
+    l.id="wuse-css"; l.rel="stylesheet"; l.href="css/wuse.css?v=19";
     document.head.appendChild(l);
   }
   function render(){
     ensureWuse();
+    if(state.view==="type") state.view="article";
     if(state.view!=="drill" && timer && !(drill&&drill.timed)){ clearInterval(timer); timer=null; }
     syncChrome();
-    var fn={home:htmlHome,learn:htmlLearn,roots:htmlRoots,rootquiz:htmlQuiz,drill:htmlDrill,type:htmlType,article:htmlArticle,review:htmlReview,lookup:htmlLookup,me:htmlMe}[state.view]||htmlHome;
+    var pages={home:htmlHome,learn:htmlLearn,roots:htmlRoots,rootquiz:htmlQuiz,drill:htmlDrill,article:htmlArticle,review:htmlReview,lookup:htmlLookup,me:htmlMe};
+    var fn=pages[state.view]||htmlHome;
     $("main").innerHTML=fn();
     bind();
   }
@@ -45,18 +47,12 @@
     document.querySelectorAll("[data-pool]").forEach(function(b){ if(b.getAttribute("data-view")) return; b.onclick=function(){ state.pool=b.getAttribute("data-pool"); startDrill(state.pool, !!(drill&&drill.timed)); render(); }; });
     document.querySelectorAll("[data-art]").forEach(function(b){ b.onclick=function(){ state.articleId=b.getAttribute("data-art"); state._ai=null; render(); }; });
     document.querySelectorAll("[data-quiz]").forEach(function(b){ b.onclick=function(){ if(b.getAttribute("data-quiz")===quiz.ans){ quiz.streak+=1; startQuiz(); render(); } else { quiz.streak=0; toast("唔啲 "+quiz.ans); } }; });
-    document.querySelectorAll("[data-k]").forEach(function(b){ b.onclick=function(){ typed=(typed+b.getAttribute("data-k")).slice(-2); var box=$("drill-in")||$("type-in")||$("art-in"); if(box) box.value=typed; if(state.view==="type"||state.view==="article") render(); }; });
+    document.querySelectorAll("[data-k]").forEach(function(b){ b.onclick=function(){ typed=(typed+b.getAttribute("data-k")).slice(-2); var box=$("drill-in")||$("art-in"); if(box) box.value=typed; if(state.view==="article") render(); }; });
     document.querySelectorAll("[data-pick]").forEach(function(b){ b.onclick=function(){ var han=b.getAttribute("data-pick"); var n=pageCands().page.indexOf(han)+1; if(n) pickNum(n); else commitHan(han); }; });
     if($("drill-in")){ $("drill-in").focus(); $("drill-form").onsubmit=function(e){ e.preventDefault(); checkDrill(); }; }
     if($("btn-check")) $("btn-check").onclick=checkDrill;
     if($("btn-hint")) $("btn-hint").onclick=function(){ if(drill){ drill.hint=Math.min(3,(drill.hint||0)+1); render(); } };
     if($("btn-skip")) $("btn-skip").onclick=function(){ startDrill(drill.pool, drill.timed); render(); };
-    if($("type-form")) $("type-form").onsubmit=function(e){ e.preventDefault(); pickNum(1); };
-    if($("type-in")){
-      $("type-in").focus();
-      $("type-in").oninput=function(){ typed=$("type-in").value.toLowerCase().replace(/[^a-y]/g,"").slice(0,2); candPage=0; render(); if($("type-in")){ $("type-in").focus(); $("type-in").value=typed; } };
-      bindImeKeys($("type-in"));
-    }
     if($("look-in")){ $("look-in").focus(); $("look-in").oninput=function(){ state._q=$("look-in").value; render(); if($("look-in")){ $("look-in").focus(); $("look-in").value=state._q; } }; }
     if($("art-form")) $("art-form").onsubmit=function(e){ e.preventDefault(); pickNum(1); };
     if($("art-in")){
