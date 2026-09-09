@@ -7,11 +7,11 @@
       row[2] = String(row[2] || "").replace(/\s+/g, "").toLowerCase();
     });
     var extra = [
-      ["港","etcu","eu"],["哋","rgpd","rd"],["專","jidi","ji"],["業","tctd","td"],["援","qwot","qt"],
+      ["港","etcu","eu"],["哔","rgpd","rd"],["專","jidi","ji"],["業","tctd","td"],["援","qwot","qt"],
       ["花","top","tp"],["真","jbmc","jc"],["報","gjsle","ge"],["壓","mkg","mg"],
-      ["力","ks","ks"],["咇","rph","rh"],["坐","oog","og"],["管","hjrr","hr"],
-      ["齩","rhhe","re"],["佢","oss","os"],["阿","nlmnr","nr"],["叔","yfe","ye"],
-      ["梗","dmlk","dk"],["喎","rdln","rn"],["班","mghlg","mg"],["連","yjwj","yj"],
+      ["力","ks","ks"],["哒","rkm","rm"],["坐","oog","og"],["管","hjrr","hr"],
+      ["嚕","rhhoe","re"],["佢","oss","os"],["阿","nlmnr","nr"],["叔","yfe","ye"],
+      ["梗","dmlk","dk"],["喃","rdln","rn"],["班","mghlg","mg"],["連","yjwj","yj"],
       ["高","yrbr","yr"],["登","nomrt","nt"],["膠","bsmh","bh"],["放","ysok","yk"],
       ["假","orye","oe"],["戲","yti","yi"],["情","pqmb","pb"],["歌","mrno","mo"],
       ["散","tbok","tk"],["頂","mnmbc","mc"],["勁","mmks","ms"],["打","qmn","qn"],
@@ -23,13 +23,13 @@
       if (!exists) SUCHENG.chars.push(row);
     });
     SUCHENG.cantonese = (SUCHENG.cantonese || []).concat(
-      ["哋","佢","齩","咇","喎","真","花","專","業","援","報","壓","力","阿","叔","梗","班","膠","散","打","港","喃","嘅","唔"]
+      ["哔","佢","嚕","哒","喃","真","花","專","業","援","報","壓","力","阿","叔","梗","班","膠","散","打","港","喃","嘅","唔"]
     );
   }
   function bootApp() {
     extras();
     var a = document.createElement("script");
-    a.src = "js/app.js?v=19";
+    a.src = "js/app.js?v=20";
     document.body.appendChild(a);
   }
   if (!window.SUCHENG || !SUCHENG.chars || SUCHENG.chars.length < 1000) {
