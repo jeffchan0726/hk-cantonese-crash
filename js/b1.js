@@ -37,7 +37,7 @@
   }
   function htmlType(){
     var out=(outText||"").split("").map(function(ch){ return ch===lastHan?"<span class='red'>"+ch+"</span>":ch; }).join("");
-    return "<div class='split'><section class='panel'><div class='kicker'>打字 · 速成 IME</div><h1>打完碼用 1–9 擇字</h1><div class='outbox'>"+(out||"<span class='lede'>尚未打字</span>")+"</div>"+imeSlots()+"<form id='type-form'><input id='type-in' type='text' maxlength='2' autocomplete='off' placeholder='aa / hn / yu' value='"+typed+"'></form></section>"+analysisBox(lastHan)+kbHtml(typed)+"</div>";
+    return "<div class='split'><section class='panel type-desk'><div class='kicker'>速成 · 打頭尾兩碼</div><div class='sheet' id='sheet'><span class='sheet-out'>"+(out||"")+"</span><span class='sheet-comp'>"+rootsStr(typed)+"</span><span class='sheet-caret'></span><span class='ime-anchor'>"+imeSlots()+"</span></div><form id='type-form'><input id='type-in' class='ghost-in' type='text' maxlength='2' autocomplete='off' value='"+typed+"'></form></section>"+analysisBox(lastHan)+kbHtml(typed)+"</div>";
   }
   function htmlArticle(){
     var art=ARTICLES[state.articleId]||ARTICLES.guan;
