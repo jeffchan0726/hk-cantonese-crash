@@ -6,42 +6,12 @@
       row[1] = String(row[1] || "").replace(/\s+/g, "").toLowerCase();
       row[2] = String(row[2] || "").replace(/\s+/g, "").toLowerCase();
     });
-    var extra = [
-      ["港","etcu","eu"],["哔","rgpd","rd"],["專","jidi","ji"],["業","tctd","td"],["援","qbme","qe"],
-      ["花","top","tp"],["真","jbmc","jc"],["報","gjsle","ge"],["壓","mkg","mg"],
-      ["力","ks","ks"],["哒","rkm","rm"],["坐","oog","og"],["管","hjrr","hr"],
-      ["嚕","rhhoe","re"],["佢","oss","os"],["阿","nlmnr","nr"],["叔","yfe","ye"],
-      ["梗","dmlk","dk"],["喃","rdln","rn"],["班","mghlg","mg"],["連","yjwj","yj"],
-      ["高","yrbr","yr"],["登","nomrt","nt"],["膠","bsmh","bh"],["放","ysok","yk"],
-      ["假","orye","oe"],["戲","yti","yi"],["情","pqmb","pb"],["歌","mrno","mo"],
-      ["散","tbok","tk"],["頂","mnmbc","mc"],["勁","mmks","ms"],["打","qmn","qn"],
-      ["低","ohpm","om"],["車","jwj","jj"],["線","vfhae","ve"],["馬","sqsf","sf"],
-      ["質","hlbuc","hc"],["喃","rohf","rf"],["嘅","raiu","ru"],["唔","rmmr","rr"]
-    ];
-    extra.forEach(function (row) {
-      var i = -1;
-      SUCHENG.chars.forEach(function (r, idx) { if (r && r[0] === row[0]) i = idx; });
-      if (i >= 0) { SUCHENG.chars[i][1] = row[1]; SUCHENG.chars[i][2] = row[2]; }
-      else SUCHENG.chars.push(row);
-    });
-    var more = ["哔","佢","嚕","哒","喃","真","花","專","業","援","報","壓","力","阿","叔","梗","班","膠","散","打","港","喃","嘅","唔"];
-    SUCHENG.cantonese = (SUCHENG.cantonese || []).concat(more.filter(function (h) {
-      return (SUCHENG.cantonese || []).indexOf(h) < 0;
-    }));
   }
   function bootApp() {
     extras();
     var a = document.createElement("script");
-    a.src = "js/app.js?v=21";
+    a.src = "js/app.js?v=22";
     document.body.appendChild(a);
   }
-  if (!window.SUCHENG || !SUCHENG.chars || SUCHENG.chars.length < 1000) {
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/gh/jeffchan0726/hk-cantonese-crash@2c4a94f56b2d5e77dca32b2f715382d9490b25fa/js/data.js";
-    s.onload = bootApp;
-    s.onerror = bootApp;
-    document.head.appendChild(s);
-  } else {
-    bootApp();
-  }
+  bootApp();
 })();
