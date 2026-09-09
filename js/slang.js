@@ -15,7 +15,7 @@
     SUCHENG.chars = clean;
     SUCHENG.starter = clean.slice(0, 80).map(function (r) { return r[0]; });
     SUCHENG.hard = clean.filter(function (r) { return String(r[1] || "").length >= 4; }).slice(0, 120).map(function (r) { return r[0]; });
-    var canto = ["嘅","喺","咯","冇","係","哋","嗬","嚟","咁","啲","嘢","啦","喎","噉","咩","㗎","嗱","啱","掃","攞","揶","諳","睇","食","飯","飲","茶","撳","掣","靡","晒","搞","掂","多","謝","唔","該","阿","叔","壓","力","港","香","粵","街"];
+    var canto = ["嘅","喺","咯","冇","係","哋","嗰","欙","咁","啲","嘢","啦","喎","噉","咩","㗎","嗱","啱","掃","擸","揶","諝","睇","食","飯","飲","茶","撳","揆","靡","晒","搞","掂","多","謝","唔","該","阿","叔","壓","力","港","香","粵","街"];
     SUCHENG.cantonese = canto.filter(function (h) { return seen[h]; });
   }
   function bootApp() {
@@ -24,11 +24,13 @@
     a.src = "js/app.js?v=25";
     document.body.appendChild(a);
   }
-  var n = 0;
+  var ticks = 0;
   function wait() {
-    if (window.__BANK_READY) { bootApp(); return; }
-    n += 1;
-    if (n > 80 && window.SUCHENG && SUCHENG.chars && SUCHENG.chars.length) { bootApp(); return; }
+    var n = (window.SUCHENG && SUCHENG.chars && SUCHENG.chars.length) || 0;
+    if (window.__BANK_READY || n >= 2500) { bootApp(); return; }
+    ticks += 1;
+    if (ticks > 40 && n >= 400) { bootApp(); return; }
+    if (ticks > 80 && n > 0) { bootApp(); return; }
     setTimeout(wait, 50);
   }
   wait();
