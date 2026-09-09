@@ -19,7 +19,7 @@
     var row=info(drill.han);
     var val=(( $("drill-in") && $("drill-in").value )||typed||"").trim().toLowerCase();
     typed=val;
-    if(val===row.sc){ markRight(drill.han); if(drill.timed) drill.got+=1; toast("啦"); startDrill(drill.pool, drill.timed); setTimeout(render,200); }
+    if(val===row.sc){ markRight(drill.han); if(drill.timed) drill.got+=1; toast("啱"); startDrill(drill.pool, drill.timed); setTimeout(render,200); }
     else { drill.misses+=1; drill.hint=Math.min(3,drill.misses); markWrong(drill.han); render(); }
   }
   function checkArticle(){
@@ -33,9 +33,9 @@
     typed=val;
     if(!row){ state._ai+=1; skipUnknown(); typed=""; state._ahint=0; render(); return; }
     if(val===row.sc){
-      markRight(ch); lastHan=ch; typed=""; state._ahint=0; state._ai+=1; skipUnknown(); toast("啦"); render();
+      markRight(ch); lastHan=ch; typed=""; state._ahint=0; state._ai+=1; skipUnknown(); toast("啱"); render();
     } else {
-      markWrong(ch); state._ahint=Math.min(3,(state._ahint||0)+1); toast("唔啦"); render();
+      markWrong(ch); state._ahint=Math.min(3,(state._ahint||0)+1); toast("唔啱"); render();
     }
   }
   function openLesson(id){
@@ -51,7 +51,7 @@
     document.querySelectorAll("[data-go]").forEach(function(b){ b.onclick=function(){ openLesson(b.getAttribute("data-go")); }; });
     document.querySelectorAll("[data-pool]").forEach(function(b){ if(b.getAttribute("data-view")) return; b.onclick=function(){ state.pool=b.getAttribute("data-pool"); startDrill(state.pool, !!(drill&&drill.timed)); render(); }; });
     document.querySelectorAll("[data-art]").forEach(function(b){ b.onclick=function(){ state.articleId=b.getAttribute("data-art"); state._ai=null; state._ahint=0; lastHan=""; typed=""; render(); }; });
-    document.querySelectorAll("[data-quiz]").forEach(function(b){ b.onclick=function(){ if(b.getAttribute("data-quiz")===quiz.ans){ quiz.streak+=1; startQuiz(); render(); } else { quiz.streak=0; toast("唔啦 "+quiz.ans); } }; });
+    document.querySelectorAll("[data-quiz]").forEach(function(b){ b.onclick=function(){ if(b.getAttribute("data-quiz")===quiz.ans){ quiz.streak+=1; startQuiz(); render(); } else { quiz.streak=0; toast("唔啱 "+quiz.ans); } }; });
     document.querySelectorAll("[data-k]").forEach(function(b){ b.onclick=function(){
       typed=(typed+b.getAttribute("data-k")).slice(-2);
       var box=$("drill-in")||$("art-in");
