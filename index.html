@@ -7,7 +7,7 @@
   <title>速成練習 · 香港速成輸入法</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg">
-  <link rel="stylesheet" href="css/app.css?v=13">
+  <link rel="stylesheet" href="css/app.css?v=14">
 </head>
 <body>
   <aside class="sidenav" id="sidenav">
@@ -19,7 +19,7 @@
       </div>
     </div>
     <nav class="side-tabs" id="side-tabs"></nav>
-    <p class="side-hint">打頭尾碼之後用 1 2 3 4 擇字。擇完紅色顯示，例如 行 = 彳/丁。</p>
+    <p class="side-hint">打頭尾碼之後用 1–9 擇字，好似真正速成候選窗。擇完紅色顯示，例如 行 = 彳/丁。</p>
   </aside>
   <div class="stage">
     <header class="topbar">
@@ -38,11 +38,11 @@
       if (el) el.innerHTML = "<pre class='boot-err'>" + String(m) + "</pre>";
     };
   </script>
-  <script src="js/data.js?v=13"></script>
-  <script src="js/slang.js?v=13"></script>
+  <script src="js/data.js?v=14"></script>
+  <script src="js/slang.js?v=14"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js?v=13").catch(function () {});
+      navigator.serviceWorker.register("./sw.js?v=14").catch(function () {});
     }
   </script>
 </body>
