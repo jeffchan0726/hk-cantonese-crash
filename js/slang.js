@@ -10,7 +10,7 @@
   function bootApp() {
     extras();
     var a = document.createElement("script");
-    a.src = "js/app.js?v=22";
+    a.src = "js/app.js?v=23";
     document.body.appendChild(a);
   }
   bootApp();
