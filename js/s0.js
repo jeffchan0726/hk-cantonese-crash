@@ -1,1 +1,18 @@
-(function(){window.SUCHENG=window.SUCHENG||{};var pack="的hapi.hi|是amyo.ao|一m.m|不mf.mf|有kb.kb|了nn.nn|人o.o|我hqi.hi|個owjr.or|這yymr.yr|在klg.kg|大k.k|來doo.do|就yfiku.yu|以vio.vo|上ym.ym|爲bhnf.bf|要mwv.mv|可mnr.mr|能ibpp.ip|到mgln.mn|會omwa.oa|你onf.of|學hbnd.hd|中l.l|時agdi.ai|下my.my|出uu.uu|好vnd.vd|說 yrcru.yu";SUCHENG.chars=(SUCHENG.chars||[]).concat(pack.split("|").map(function(s){var i=s.lastIndexOf(".");var L=s.slice(0,i);return[L.charAt(0),L.slice(1),s.slice(i+1)];}));})();
+(function () {
+  window.SUCHENG = window.SUCHENG || {};
+  SUCHENG.chars = SUCHENG.chars || [];
+  window.__BANK_READY = false;
+  var left = 30;
+  function done() {
+    left -= 1;
+    if (left <= 0) window.__BANK_READY = true;
+  }
+  for (var i = 0; i < 30; i++) {
+    var s = document.createElement("script");
+    var id = (i < 10 ? "0" : "") + i;
+    s.src = "js/p" + id + ".js?v=25";
+    s.onload = done;
+    s.onerror = done;
+    document.head.appendChild(s);
+  }
+})();
