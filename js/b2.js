@@ -1,4 +1,11 @@
+  function ensureWuse(){
+    if(document.getElementById("wuse-css")) return;
+    var l=document.createElement("link");
+    l.id="wuse-css"; l.rel="stylesheet"; l.href="css/wuse.css?v=16";
+    document.head.appendChild(l);
+  }
   function render(){
+    ensureWuse();
     if(state.view!=="drill" && timer && !(drill&&drill.timed)){ clearInterval(timer); timer=null; }
     syncChrome();
     var fn={home:htmlHome,learn:htmlLearn,roots:htmlRoots,rootquiz:htmlQuiz,drill:htmlDrill,type:htmlType,article:htmlArticle,review:htmlReview,lookup:htmlLookup,me:htmlMe}[state.view]||htmlHome;
