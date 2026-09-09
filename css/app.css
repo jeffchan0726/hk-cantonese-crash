@@ -88,14 +88,17 @@ input:focus, textarea:focus { outline: 2px solid #e2b14a55; border-color: var(--
 .ime-comp { min-height: 36px; font-size: 22px; letter-spacing: .12em; color: var(--gold2); border-bottom: 1px dashed var(--line); padding-bottom: 8px; margin-bottom: 10px; }
 .ime-comp .raw { color: var(--muted); font-size: 14px; letter-spacing: .2em; margin-left: 8px; }
 .ime-cands { display: flex; gap: 6px; flex-wrap: wrap; }
-.ime-item { display: flex; align-items: baseline; gap: 6px; border: 1px solid var(--line); background: var(--panel2); border-radius: 10px; padding: 8px 10px; color: var(--text); min-width: 64px; }
+.ime-item { display: flex; align-items: baseline; gap: 6px; border: 1px solid var(--line); background: var(--panel2); border-radius: 10px; padding: 8px 10px; color: var(--text); min-width: 72px; min-height: 52px; justify-content: center; }
 .ime-item b { color: var(--gold); font-size: 13px; }
-.ime-item .ch { font-size: 24px; }
+.ime-item .ch { font-size: 24px; font-family: "Noto Serif TC","Songti TC",serif; }
+.ime-item.empty { opacity: .35; }
+.ime-comp .comp-han { font-size: 28px; color: var(--gold2); }
 .outbox { min-height: 72px; background: #12161c; border: 1px dashed var(--line); border-radius: 12px; padding: 12px 14px; font-size: 26px; line-height: 1.6; word-break: break-all; }
-.outbox .red { color: #ff6b7a; }
+.outbox .red { color: #ff4d5e; }
 .analyze { text-align: center; padding: 8px 0 4px; }
-.analyze-han { font-size: 72px; line-height: 1; color: #ff6b7a; font-family: "Noto Serif TC","Songti TC",serif; }
-.analyze-eq { color: #ff6b7a; font-size: 28px; margin-top: 8px; }
+.analyze-han { font-size: 72px; line-height: 1; color: #ff4d5e; font-family: "Noto Serif TC","Songti TC",serif; }
+.analyze-eq { color: #ff4d5e; font-size: 28px; margin-top: 8px; font-weight: 700; letter-spacing: .04em; }
+.analyze-eq .red { color: #ff4d5e; }
 .analyze-meta { color: var(--muted); margin-top: 6px; }
 .ime-hint { color: var(--muted); font-size: 12px; margin-top: 8px; }
 .toast { position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%); background: #223; color: var(--text); border: 1px solid var(--line); padding: 8px 14px; border-radius: 999px; z-index: 20; }
