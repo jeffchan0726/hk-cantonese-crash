@@ -1,5 +1,5 @@
-const CACHE = "sucheng-v14";
-const ASSETS = ["./","index.html","css/app.css","js/app.js","js/a.js","js/b1.js","js/b2.js","js/data.js","js/slang.js","manifest.json","icon.svg"];
+const CACHE = "sucheng-v18";
+const ASSETS = ["./","index.html","css/app.css","css/ime.css","css/wuse.css","js/app.js","js/a.js","js/b1.js","js/b2.js","js/data.js","js/slang.js","js/chars3000a.js","js/chars3000b.js","manifest.json","icon.svg"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
   self.skipWaiting();
