@@ -63,10 +63,10 @@
   }
   function pageCands(){
     var all=I.bySc.get(String(typed||"").toLowerCase())||[];
-    return {all:all, page:all.slice(candPage*4, candPage*4+4), pages:Math.max(1, Math.ceil(all.length/4))};
+    return {all:all, page:all.slice(candPage*9, candPage*9+9), pages:Math.max(1, Math.ceil(all.length/9))};
   }
   function analysisBox(han){
-    if(!han||!info(han)) return "<p class='lede'>\u6253\u982d\u5c3e\u78bc\u4e4b\u5f8c\uff0c\u4e0b\u9762 1 2 3 4 \u4fc2\u64c7\u5b57\u4f4d\u3002\u7a7a\u767d\u9375\u64c7\u7b2c 1 \u96bb\u3002</p>";
+    if(!han||!info(han)) return "<p class='lede'>\u6253\u982d\u5c3e\u78bc\u4e4b\u5f8c\uff0c\u4e0b\u9762 1–9 \u4fc2\u64c7\u5b57\u4f4d\u3002\u7a7a\u767d\u9375\u64c7\u7b2c 1 \u96bb\u3002</p>";
     var row=info(han);
     var split=analyzeOf(han);
     return "<div class='analyze'><div class='analyze-han'>"+han+"</div><div class='analyze-eq'><span class='red'>"+han+"</span> = "+split+"</div><div class='analyze-meta'>\u5b57\u9996/\u5b57\u8eab \u00b7 \u901f\u6210 "+rootsStr(row.sc)+" "+row.sc.toUpperCase()+" \u00b7 \u5009\u9821 "+rootsStr(row.cj)+" "+String(row.cj||"").toUpperCase()+"</div></div>";
