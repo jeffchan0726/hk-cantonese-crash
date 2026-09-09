@@ -7,8 +7,9 @@
   <title>速成練習 · 香港速成輸入法</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg">
-  <link rel="stylesheet" href="css/app.css?v=15">
-  <link rel="stylesheet" href="css/ime.css?v=15">
+  <link rel="stylesheet" href="css/app.css?v=16">
+  <link rel="stylesheet" href="css/ime.css?v=16">
+  <link rel="stylesheet" href="css/wuse.css?v=16">
 </head>
 <body>
   <aside class="sidenav" id="sidenav">
@@ -20,7 +21,7 @@
       </div>
     </div>
     <nav class="side-tabs" id="side-tabs"></nav>
-    <p class="side-hint">打頭尾兩碼，游標旁出 1–9 候選窗，好似 Windows 速成。</p>
+    <p class="side-hint">大字分色拆碼；錯一次提頭碼，錯兩次頭尾，第三次全圖。</p>
   </aside>
   <div class="stage">
     <header class="topbar">
@@ -39,11 +40,11 @@
       if (el) el.innerHTML = "<pre class='boot-err'>" + String(m) + "</pre>";
     };
   </script>
-  <script src="js/data.js?v=15"></script>
-  <script src="js/slang.js?v=15"></script>
+  <script src="js/data.js?v=16"></script>
+  <script src="js/slang.js?v=16"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js?v=15").catch(function () {});
+      navigator.serviceWorker.register("./sw.js?v=16").catch(function () {});
     }
   </script>
 </body>
