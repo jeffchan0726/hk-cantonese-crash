@@ -26,7 +26,7 @@
   }
   function htmlHome(){
     var next=LESSONS.find(function(l){ return !state.lessonsDone[l.id]; })||LESSONS[0];
-    return "<div class='home-grid'><section class='hero'><div class='kicker'>SUCHENG</div><h1>只打頭尾兩碼</h1><p class='lede'>「港」EU 水山。「說」YU 卜山。「行」HN 彳/丁。</p><div class='stats'><div class='stat'><b>"+(state.streak||0)+"</b><span>連續日</span></div><div class='stat'><b>"+(state.correct||0)+"</b><span>拆啲</span></div><div class='stat'><b>"+acc()+"%</b><span>準確率</span></div></div></section><section class='path'><article class='path-card'><div><h3>繼續："+next.title+"</h3><p>"+next.blurb+"</p></div><button class='go' data-go='"+next.id+"'>去</button></article><article class='path-card'><div><h3>課程</h3><p>字根→粵語→文章</p></div><button class='go' data-view='learn'>去</button></article><article class='path-card'><div><h3>拆碼</h3><p>大字分色，錯一次提頭碼</p></div><button class='go' data-view='drill'>去</button></article><article class='path-card'><div><h3>打字選字</h3><p>1–9 擇字</p></div><button class='go' data-view='type'>去</button></article><article class='path-card'><div><h3>查碼</h3><p>漢字↔速成</p></div><button class='go' data-view='lookup'>去</button></article></section></div>";
+    return "<div class='home-grid'><section class='hero'><div class='kicker'>SUCHENG</div><h1>只打頭尾兩碼</h1><p class='lede'>「港」EU 水山。「說」YU 卜山。「行」HN 彳/丁。</p><div class='stats'><div class='stat'><b>"+(state.streak||0)+"</b><span>連續日</span></div><div class='stat'><b>"+(state.correct||0)+"</b><span>拆啲</span></div><div class='stat'><b>"+acc()+"%</b><span>準確率</span></div></div></section><section class='path'><article class='path-card'><div><h3>繼續："+next.title+"</h3><p>"+next.blurb+"</p></div><button class='go' data-go='"+next.id+"'>去</button></article><article class='path-card'><div><h3>課程</h3><p>字根→粵語→文章</p></div><button class='go' data-view='learn'>去</button></article><article class='path-card'><div><h3>拆碼</h3><p>大字分色，錯一次提頭碼</p></div><button class='go' data-view='drill'>去</button></article><article class='path-card'><div><h3>文章</h3><p>潮文／自訂篇</p></div><button class='go' data-view='article'>去</button></article><article class='path-card'><div><h3>查碼</h3><p>漢字↔速成</p></div><button class='go' data-view='lookup'>去</button></article></section></div>";
   }
   function htmlLearn(){ return "<section class='panel'><h1>課程</h1><div class='path'>"+LESSONS.map(function(l){ return "<article class='path-card'><div><h3>"+l.title+"</h3><p>"+l.blurb+"</p></div><button class='go' data-go='"+l.id+"'>去</button></article>"; }).join("")+"</div></section>"; }
   function htmlRoots(){ return "<section class='panel'><h1>廿四字根</h1><div class='root-grid'>"+"ABCDEFGHIJKLMNOPQRSTUVWY".split("").map(function(k){ return "<div class='root'><b>"+SUCHENG.map[k]+"</b><span>"+k+"</span></div>"; }).join("")+"</div><div class='row' style='margin-top:16px'><button class='btn' data-go='rootquiz'>測驗</button></div></section>"; }
@@ -56,12 +56,6 @@
     var glyphs=rootsStr(typed);
     var win=pack.all.length?("<div class='ime-win'><div class='ime-col'><div class='ime-cands'>"+slots+"</div></div><div class='ime-dots'>"+dots+"</div></div>"):"";
     return "<div class='ime'><div class='ime-comp'><span class='comp-han'>"+(glyphs||"")+"</span><span class='raw'>"+(typed.toUpperCase()||"")+"</span></div>"+win+"</div>";
-  }
-  function htmlType(){
-    var out=(outText||"").split("").map(function(ch){ return ch===lastHan?"<span class='red'>"+ch+"</span>":ch; }).join("");
-    var n=[].slice.call(outText||"").length;
-    var speed=n?("<div class='speedbar'><span>"+n+" 字</span><span>"+wpmOf(n,typeT0)+" 字/分</span></div>"):"";
-    return "<div class='split'><section class='panel type-desk'><div class='kicker'>速成 · 打頭尾兩碼</div>"+speed+"<div class='sheet' id='sheet'><span class='sheet-out'>"+(out||"")+"</span><span class='sheet-comp'>"+rootsStr(typed)+"</span><span class='sheet-caret'></span><span class='ime-anchor'>"+imeSlots()+"</span></div><form id='type-form'><input id='type-in' class='ghost-in' type='text' maxlength='2' autocomplete='off' value='"+typed+"'></form></section>"+analysisBox(lastHan)+kbHtml(typed)+"</div>";
   }
   function htmlArticle(){
     if(state.customArt) ARTICLES.custom={title:"自訂",text:state.customArt};
