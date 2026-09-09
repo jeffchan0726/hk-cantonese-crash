@@ -13,5 +13,9 @@
     a.src = "js/app.js?v=23";
     document.body.appendChild(a);
   }
-  bootApp();
+  function wait() {
+    if (window.__BANK_READY) { bootApp(); return; }
+    setTimeout(wait, 40);
+  }
+  wait();
 })();
