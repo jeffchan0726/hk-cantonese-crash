@@ -1,0 +1,1 @@
+(function(){window.SUCHENG=window.SUCHENG||{};SUCHENG.chars=SUCHENG.chars||[];if(!SUCHENG.starter||!SUCHENG.starter.length){SUCHENG.starter=(SUCHENG.chars||[]).slice(0,80).map(function(r){return r[0];});SUCHENG.hard=(SUCHENG.chars||[]).filter(function(r){return String(r[1]||"").length>=4;}).slice(0,80).map(function(r){return r[0];});}})();
